@@ -3,8 +3,9 @@ import re
 import json
 from app.db.models import ClubFederation
 from app.services.country_service import get_country, get_countries
-from app.services.league_service import get_league, create_league, list_leagues
+from app.services.league_service import get_league, list_leagues
 from app.components.editor.countries_options import countries_options
+from app.services.club_service import create_club
 
 def open_create_club(page: ft.Page):
     all_countries = get_countries()
@@ -73,6 +74,7 @@ def open_create_club(page: ft.Page):
         picker.pick_files(
             allow_multiple=False,
             allowed_extensions=["png", "jpg", "jpeg", "webp"],
+
         )
 
     error_text = ft.Text("", color=ft.Colors.RED_300, size=12)
@@ -85,7 +87,8 @@ def open_create_club(page: ft.Page):
             allow_multiple=False,
             allowed_extensions=["json", "csv"],
             dialog_title="Selecionar arquivo de dados",
-            file_type=ft.FilePickerFileType.CUSTOM
+            file_type=ft.FilePickerFileType.CUSTOM,
+            initial_directory="/home/habby-valle/Documentos/projects/games/fantasyfoot/data"
         )
 
     def fill_form_from_data(data):
@@ -108,6 +111,9 @@ def open_create_club(page: ft.Page):
         if 'crest_path' in data and data['crest_path']:
             chosen_logo["path"] = data['crest_path']
             logo_preview.src = data['crest_path']
+        if 'country_id' in data and data['country_id']:
+            country_id = get_country(int(data["country_id"]))
+            country.value = country_id.id
         page.update()
 
     def on_file_picker(e: ft.FilePickerResultEvent):
@@ -123,7 +129,9 @@ def open_create_club(page: ft.Page):
                 if hasattr(file, 'path') and file.path:
                     with open(file.path, 'r', encoding='utf-8') as f:
                         json_data = json.load(f)
+                        print(json_data)
                         fill_form_from_data(json_data)
+                    page.open(ft.SnackBar(ft.Text("Arquivo JSON selecionado processando.")))
                 else:
                     page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
             elif file.name.endswith('.csv'):
@@ -132,7 +140,6 @@ def open_create_club(page: ft.Page):
                 page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
         except Exception as ex:
             page.snack_bar = ft.SnackBar(ft.Text(f"Erro na importação: {ex}"))
-            page.snack_bar.open()
         
         page.update()
     
@@ -156,7 +163,7 @@ def open_create_club(page: ft.Page):
             page.update()
             return
 
-        if float(budget.value) == 0.0 or float(wage_budget.value) == 0.0:
+        if int(budget.value) == 0 or int(wage_budget.value) == 0:
             error_text.value = "Preencha os orçamentos."
             page.update()
             return
@@ -188,7 +195,8 @@ def open_create_club(page: ft.Page):
                 "country": country_obj,
                 "league": league_obj,
             }
-            create_league(payload)
+
+            create_club(payload)
 
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
