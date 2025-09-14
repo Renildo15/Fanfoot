@@ -94,8 +94,7 @@ class Club(SQLModel, table=True):
     wage_budget: float = 0.0
     federation: Optional[ClubFederation] = Field(sa_column_kwargs={"nullable": True})
     stadium: Optional[str] = None
-    coach: Optional[str] = None
-
+   
     crest_path: Optional[str] = None
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None
