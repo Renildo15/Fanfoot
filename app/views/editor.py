@@ -11,6 +11,8 @@ from app.components.editor.sections.section_toolbar_leagues import section_toolb
 from app.components.editor.sections.section_toolbar_players import section_toolbar_players
 from app.components.editor.sections.section_toolbar_stats import section_toolbar_stats
 
+from app.services.club_service import list_clubs
+
 SECTIONS = [
     ("Ligas", ft.Icons.EVENT_AVAILABLE_OUTLINED),
     ("Clubes", ft.Icons.STADIUM_OUTLINED),
@@ -21,9 +23,16 @@ SECTIONS = [
 
 def view(page: ft.Page) -> ft.Control:
     current = {"name": "Ligas"}  # estado simples
-
+    clubs, total = list_clubs()
+    clubs_table_ref = ft.Ref[ft.DataTable]()
     # ---------- Conteúdo da área principal ----------
     content_container = ft.Container(expand=True)
+
+    def refresh_clubs():
+        clubs, total = list_clubs()
+        # Atualiza a tabela
+        clubs_table_ref.current = clubs_table(clubs)
+        page.update()
 
     def build_section_content(name: str) -> ft.Control:
         if name == "Ligas":
@@ -33,7 +42,7 @@ def view(page: ft.Page) -> ft.Control:
             )
         if name == "Clubes":
             return ft.Column(
-                [section_toolbar_clubs(page), ft.Divider(opacity=0.2), clubs_table()],
+                [section_toolbar_clubs(page, refresh_callback=refresh_clubs), ft.Divider(opacity=0.2), clubs_table(clubs)],
                 spacing=12, expand=True,
             )
         if name == "Jogadores":

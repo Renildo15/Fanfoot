@@ -1,9 +1,9 @@
 import flet as ft
 from app.services.club_service import list_clubs
 from app.services.country_service import get_country
+from app.db.models import Club
 
-def clubs_table():
-    clubs, total = list_clubs()
+def clubs_table(clubs: Club):
     rows = []
 
     for club in clubs:

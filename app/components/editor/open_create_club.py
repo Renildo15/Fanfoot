@@ -1,13 +1,14 @@
 import flet as ft
 import re
 import json
+import csv
 from app.db.models import ClubFederation
 from app.services.country_service import get_country, get_countries
 from app.services.league_service import get_league, list_leagues
 from app.components.editor.countries_options import countries_options
 from app.services.club_service import create_club
 
-def open_create_club(page: ft.Page):
+def open_create_club(page: ft.Page, on_save_callback=None):
     all_countries = get_countries()
 
     name = ft.TextField(label="Nome do clube", autofocus=True, width=360)
@@ -136,6 +137,16 @@ def open_create_club(page: ft.Page):
                     page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
             elif file.name.endswith('.csv'):
                 page.open(ft.SnackBar(ft.Text("Arquivo CSV selecionado. Processando...")))
+                if hasattr(file, "path") and file.path:
+                    with open(file.path, 'r', encoding='utf-8') as f:
+                        csv_reader = csv.DictReader(f)
+                        csv_data = list(csv_reader)
+
+                        if csv_data:
+                            fill_form_from_data(csv_data[0])
+                        page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
+                else:
+                    page.snack_bar = ft.SnackBar(ft.Text("Modo web: upload não implementado"))
             else:
                 page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
         except Exception as ex:
@@ -197,6 +208,9 @@ def open_create_club(page: ft.Page):
             }
 
             create_club(payload)
+            if on_save_callback:
+                on_save_callback()
+            page.open(ft.SnackBar(ft.Text(f"Clube criado com sucesso!")))
 
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
