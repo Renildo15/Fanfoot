@@ -2,6 +2,14 @@ from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 import enum
 
+class CoachStyle(str, enum.Enum):
+    OFFENSIVE = "OFFENSIVE"
+    DEFENSIVE = "DEFENSIVE"
+    BALANCED = "BALANCED"
+    COUNTER_ATTACK = "COUNTER_ATTACK"
+    POSSESSION = "POSSESSION"
+    PRESSING = "PRESSING"
+
 class Position(str, enum.Enum):
     GK = "GK"
     RB = "RB"
@@ -50,6 +58,7 @@ class Country(SQLModel, table=True):
     competitions: list["Competition"] = Relationship(back_populates="country")
     clubs: list["Club"] = Relationship(back_populates="country")
     players: list["Player"] = Relationship(back_populates="country")
+    coach: Optional["Coach"] = Relationship(back_populates="country", sa_relationship_kwargs={"uselist": False})
 
 class Competition(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -84,6 +93,8 @@ class Club(SQLModel, table=True):
     budget: float = 0.0
     wage_budget: float = 0.0
     federation: Optional[ClubFederation] = Field(sa_column_kwargs={"nullable": True})
+    stadium: Optional[str] = None
+    coach: Optional[str] = None
 
     crest_path: Optional[str] = None
     primary_color: Optional[str] = None
@@ -99,9 +110,16 @@ class Club(SQLModel, table=True):
     players: list["Player"] = Relationship(back_populates="club")
     player_stats: list["PlayerStatsSeason"] = Relationship(back_populates="club")
 
+    coach: Optional["Coach"] = Relationship(back_populates="club", sa_relationship_kwargs={"uselist": False})
+    coach_history: list["CoachHistory"] = Relationship(back_populates="club")
+
     @property
     def competitions(self):
         return [assoc.competition for assoc in self.competition_associations]
+    
+    @property
+    def current_coach(self):
+        return self.coach
 
 class Player(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -156,3 +174,39 @@ class ClubCompetition(SQLModel, table=True):
     # Relações (opcionais, mas úteis para acesso)
     club: Optional["Club"] = Relationship(back_populates="competition_associations")
     competition: Optional["Competition"] = Relationship(back_populates="club_associations")
+
+
+class Coach(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    full_name: str = Field(index=True)
+    surname: Optional[str] = None
+    age: int = 35
+    style: CoachStyle = Field(default=CoachStyle.BALANCED)
+    reputation: int = Field(default=50, ge=1, le=100)  # 1-100
+    experience: int = Field(default=1, ge=0)  # Anos de experiência
+    salary_weekly: float = Field(default=0.0)
+    contract_until: str = Field(default="2025-06-30")
+    
+    # Relação One-to-One com Club (um técnico para um clube)
+    club_id: Optional[int] = Field(default=None, foreign_key="club.id", unique=True)
+    club: Optional["Club"] = Relationship(back_populates="coach")
+
+    country_id: int = Field(default=None, foreign_key="country.id")
+    country: Optional[Country] = Relationship(back_populates="coach")
+    
+    # Histórico de clubes (Many-to-Many)
+    club_history: list["CoachHistory"] = Relationship(back_populates="coach")
+
+class CoachHistory(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    coach_id: int = Field(foreign_key="coach.id")
+    club_id: int = Field(foreign_key="club.id")
+    season_start: int = Field(default=2024)
+    season_end: Optional[int] = Field(default=None)  # None se ainda estiver no clube
+    matches: int = Field(default=0)
+    wins: int = Field(default=0)
+    draws: int = Field(default=0)
+    losses: int = Field(default=0)
+    
+    coach: Coach = Relationship(back_populates="club_history")
+    club: "Club" = Relationship(back_populates="coach_history")

@@ -6,10 +6,19 @@ from app.db.models import ClubFederation
 from app.services.country_service import get_country, get_countries
 from app.components.editor.countries_options import countries_options
 from app.services.club_service import create_club
+from app.services.coach_service import list_coachs, get_coach
 
 def open_create_club(page: ft.Page, on_save_callback=None):
     all_countries = get_countries()
+    all_coachs = list_coachs()
 
+    coachs_options = [
+        ft.dropdown.Option(
+            key=c.id,
+            text=c.full_name,
+            content=ft.Text(c.full_name)
+        ) for c in all_coachs
+    ]
     name = ft.TextField(label="Nome do clube", autofocus=True, width=360)
     short_name = ft.TextField(label="Abreviação", width=360, max_length=3)
     reputation = ft.TextField(label="Força", width=170, keyboard_type=ft.KeyboardType.NUMBER, value="10")
@@ -32,6 +41,12 @@ def open_create_club(page: ft.Page, on_save_callback=None):
         label="País", 
         width=170,
         options=countries_options(all_countries),
+    )
+
+    coach = ft.Dropdown(
+        label="Técnico",
+        width=170,
+        options=coachs_options
     )
     
     primary_color = ft.TextField(label="Cor primária", width=170, max_length=7, value="#000000")
@@ -101,6 +116,9 @@ def open_create_club(page: ft.Page, on_save_callback=None):
         if 'country_id' in data and data['country_id']:
             country_id = get_country(int(data["country_id"]))
             country.value = country_id.id
+        if 'coach_id' in data and data['coach_id']:
+            coach_id = get_coach(int(data["coach_id"]))
+            coach.value = coach_id.id
         page.update()
 
     def on_file_picker(e: ft.FilePickerResultEvent):
@@ -174,6 +192,11 @@ def open_create_club(page: ft.Page, on_save_callback=None):
             country_obj = None
             if country.value:
                 country_obj = get_country(country.value)
+
+            coach_obj = None
+            if coach.value:
+                coach_obj = get_coach(coach.value)
+
             payload = {
                 "name": name.value.strip(),
                 "short_name": short_name.value.strip(),
@@ -185,6 +208,7 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 "primary_color": primary_color.value,
                 "secondary_color": secondary_color.value,
                 "country": country_obj,
+                "coach": coach_obj
             }
 
             create_club(payload)
@@ -240,6 +264,7 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 [
                     federation,
                     country,
+                    coach
                 ],
                 spacing=20,
             ),
