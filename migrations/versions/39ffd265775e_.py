@@ -1,18 +1,18 @@
 """
 
-Revision ID: 0f1aa9ea4a54
+Revision ID: 39ffd265775e
 Revises: 
-Create Date: 2025-09-07 18:35:42.402234
+Create Date: 2025-09-13 22:15:35.921399
 
 """
 from typing import Sequence, Union
-import sqlmodel
+
 from alembic import op
 import sqlalchemy as sa
-
+import sqlmodel
 
 # revision identifiers, used by Alembic.
-revision: str = '0f1aa9ea4a54'
+revision: str = '39ffd265775e'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,10 +32,28 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_country_code'), ['code'], unique=True)
         batch_op.create_index(batch_op.f('ix_country_name'), ['name'], unique=False)
 
-    op.create_table('league',
+    op.create_table('club',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('type', sa.Enum('LEAGUE', 'CUP', name='leaguetype'), nullable=False),
+    sa.Column('short_name', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('reputation', sa.Integer(), nullable=False),
+    sa.Column('budget', sa.Float(), nullable=False),
+    sa.Column('wage_budget', sa.Float(), nullable=False),
+    sa.Column('federation', sa.Enum('FHV', 'FRF', 'FMH', name='clubfederation'), nullable=True),
+    sa.Column('crest_path', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('primary_color', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('secondary_color', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('country_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['country_id'], ['country.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('club', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_club_name'), ['name'], unique=True)
+
+    op.create_table('competition',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('type', sa.Enum('LEAGUE', 'CUP', name='competitiontype'), nullable=False),
     sa.Column('level', sa.Integer(), nullable=False),
     sa.Column('max_teams', sa.Integer(), nullable=False),
     sa.Column('points_win', sa.Integer(), nullable=False),
@@ -49,29 +67,18 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['country_id'], ['country.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('league', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_league_name'), ['name'], unique=False)
+    with op.batch_alter_table('competition', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_competition_name'), ['name'], unique=False)
 
-    op.create_table('club',
+    op.create_table('clubcompetition',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('short_name', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('reputation', sa.Integer(), nullable=False),
-    sa.Column('budget', sa.Float(), nullable=False),
-    sa.Column('wage_budget', sa.Float(), nullable=False),
-    sa.Column('federation', sa.Enum('FHV', 'FRF', 'FMH', name='clubfederation'), nullable=True),
-    sa.Column('crest_path', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('primary_color', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('secondary_color', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('league_id', sa.Integer(), nullable=True),
-    sa.Column('country_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['country_id'], ['country.id'], ),
-    sa.ForeignKeyConstraint(['league_id'], ['league.id'], ),
+    sa.Column('club_id', sa.Integer(), nullable=False),
+    sa.Column('competition_id', sa.Integer(), nullable=False),
+    sa.Column('season_year', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['club_id'], ['club.id'], ),
+    sa.ForeignKeyConstraint(['competition_id'], ['competition.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('club', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_club_name'), ['name'], unique=True)
-
     op.create_table('player',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('full_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -112,7 +119,7 @@ def upgrade() -> None:
     sa.Column('red_cards', sa.Integer(), nullable=False),
     sa.Column('avg_rating', sa.Float(), nullable=False),
     sa.ForeignKeyConstraint(['club_id'], ['club.id'], ),
-    sa.ForeignKeyConstraint(['competition_id'], ['league.id'], ),
+    sa.ForeignKeyConstraint(['competition_id'], ['competition.id'], ),
     sa.ForeignKeyConstraint(['player_id'], ['player.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -127,14 +134,15 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_player_full_name'))
 
     op.drop_table('player')
+    op.drop_table('clubcompetition')
+    with op.batch_alter_table('competition', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_competition_name'))
+
+    op.drop_table('competition')
     with op.batch_alter_table('club', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_club_name'))
 
     op.drop_table('club')
-    with op.batch_alter_table('league', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_league_name'))
-
-    op.drop_table('league')
     with op.batch_alter_table('country', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_country_name'))
         batch_op.drop_index(batch_op.f('ix_country_code'))

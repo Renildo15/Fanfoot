@@ -1,6 +1,6 @@
 import flet as ft
 import re
-from app.db.models import LeagueType
+from app.db.models import CompetitionType
 from app.services.country_service import get_countries, get_country
 from app.services.league_service import create_league 
 from app.utils.get_type_value import get_type_value
@@ -12,9 +12,9 @@ def open_create_league_dialog(page: ft.Page):
     def get_league_type(value):
         match value:
             case "Liga":
-                return LeagueType.LEAGUE.value
+                return CompetitionType.LEAGUE.value
             case "Copa":
-                return LeagueType.CUP.value
+                return CompetitionType.CUP.value
     
     name = ft.TextField(label="Nome do campeonato", autofocus=True, width=360)
 
@@ -32,8 +32,8 @@ def open_create_league_dialog(page: ft.Page):
     type_dd = ft.Dropdown(
         label="Tipo",
         width=220,
-        options=[ft.dropdown.Option(get_type_value(t.value)) for t in LeagueType],
-        value=LeagueType.LEAGUE.value,
+        options=[ft.dropdown.Option(get_type_value(t.value)) for t in CompetitionType],
+        value=CompetitionType.LEAGUE.value,
     )
     level = ft.TextField(label="Nível", width=120, keyboard_type=ft.KeyboardType.NUMBER, value="1")
     max_teams = ft.TextField(label="Times máx.", width=120, keyboard_type=ft.KeyboardType.NUMBER, value="20")

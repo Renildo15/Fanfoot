@@ -1,9 +1,9 @@
 
-from app.db.models import LeagueType
+from app.db.models import CompetitionType
 
 def get_type_value(value):
     match value:
-        case LeagueType.LEAGUE.value:
+        case CompetitionType.LEAGUE.value:
             return "Liga"
-        case LeagueType.CUP.value:
+        case CompetitionType.CUP.value:
             return "Copa"

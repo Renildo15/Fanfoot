@@ -1,5 +1,5 @@
 import flet as ft
-from app.services.league_service import list_leagues, League
+from app.services.league_service import list_leagues, Competition
 from app.utils.get_type_value import get_type_value
 from app.utils.get_country_display import get_country_display
 
@@ -7,7 +7,7 @@ def leagues_table():
 
     competitions, total_count = list_leagues()
 
-    def get_level_display(competition: League):
+    def get_level_display(competition: Competition):
         if competition.type == "LEAGUE":
             match competition.level:
                 case 1:

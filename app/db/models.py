@@ -31,7 +31,7 @@ class PlayerStatus(str, enum.Enum):
     ACADEMY = "ACADEMY"
     RETIRED = "RETIRED"
 
-class LeagueType(str, enum.Enum):
+class CompetitionType(str, enum.Enum):
     LEAGUE = "LEAGUE" 
     CUP = "CUP"
 
@@ -47,14 +47,14 @@ class Country(SQLModel, table=True):
     flag: str
     
     # FIXED: Use SQLModel's relationship syntax without List annotation
-    leagues: list["League"] = Relationship(back_populates="country")
+    competitions: list["Competition"] = Relationship(back_populates="country")
     clubs: list["Club"] = Relationship(back_populates="country")
     players: list["Player"] = Relationship(back_populates="country")
 
-class League(SQLModel, table=True):
+class Competition(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
-    type: LeagueType = Field(sa_column_kwargs={"nullable": False})
+    type: CompetitionType = Field(sa_column_kwargs={"nullable": False})
     level: int = 1
     max_teams: int = Field(default=0)
     points_win: int = 3
@@ -67,10 +67,14 @@ class League(SQLModel, table=True):
     secondary_color: Optional[str] = None    
 
     country_id: Optional[int] = Field(default=None, foreign_key="country.id")
-    country: Optional[Country] = Relationship(back_populates="leagues")
+    country: Optional[Country] = Relationship(back_populates="competitions")
 
-    clubs: list["Club"] = Relationship(back_populates="league")
+    club_associations: list["ClubCompetition"] = Relationship(back_populates="competition")
     player_stats: list["PlayerStatsSeason"] = Relationship(back_populates="competition")
+
+    @property
+    def clubs(self):
+        return [assoc.club for assoc in self.club_associations]
 
 class Club(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -85,14 +89,19 @@ class Club(SQLModel, table=True):
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None
 
-    league_id: Optional[int] = Field(default=None, foreign_key="league.id")
-    league: Optional[League] = Relationship(back_populates="clubs")
+    # competition_id: Optional[int] = Field(default=None, foreign_key="competition.id")
+    # competition: Optional[Competition] = Relationship(back_populates="clubs")
 
     country_id: Optional[int] = Field(default=None, foreign_key="country.id")
     country: Optional[Country] = Relationship(back_populates="clubs")
 
+    competition_associations: list["ClubCompetition"] = Relationship(back_populates="club")
     players: list["Player"] = Relationship(back_populates="club")
     player_stats: list["PlayerStatsSeason"] = Relationship(back_populates="club")
+
+    @property
+    def competitions(self):
+        return [assoc.competition for assoc in self.competition_associations]
 
 class Player(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -125,7 +134,7 @@ class PlayerStatsSeason(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     player_id: int = Field(foreign_key="player.id")
     club_id: Optional[int] = Field(default=None, foreign_key="club.id")
-    competition_id: Optional[int] = Field(default=None, foreign_key="league.id")
+    competition_id: Optional[int] = Field(default=None, foreign_key="competition.id")
     season_year: int
     matches_played: int = 0
     goals: int = 0
@@ -136,4 +145,14 @@ class PlayerStatsSeason(SQLModel, table=True):
 
     player: Player = Relationship(back_populates="stats")
     club: Optional[Club] = Relationship(back_populates="player_stats")
-    competition: Optional[League] = Relationship(back_populates="player_stats")
+    competition: Optional[Competition] = Relationship(back_populates="player_stats")
+
+class ClubCompetition(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    club_id: int = Field(foreign_key="club.id")
+    competition_id: int = Field(foreign_key="competition.id")
+    season_year: int = Field(default=2024)  # Ano da temporada
+    
+    # Relações (opcionais, mas úteis para acesso)
+    club: Optional["Club"] = Relationship(back_populates="competition_associations")
+    competition: Optional["Competition"] = Relationship(back_populates="club_associations")

@@ -14,7 +14,7 @@ class ClubCreate(SQLModel):
     crest_path: Optional[str]
     primary_color: Optional[str]
     secondary_color: Optional[str]
-    league_id: Optional[int]               
+    competition_id: Optional[int]               
     country_id: Optional[int]
 
 def create_club(data: ClubCreate) -> Club:

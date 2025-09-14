@@ -4,7 +4,6 @@ import json
 import csv
 from app.db.models import ClubFederation
 from app.services.country_service import get_country, get_countries
-from app.services.league_service import get_league, list_leagues
 from app.components.editor.countries_options import countries_options
 from app.services.club_service import create_club
 
@@ -29,19 +28,6 @@ def open_create_club(page: ft.Page, on_save_callback=None):
         width=64, height=64, fit=ft.ImageFit.CONTAIN
     )
     
-
-    competitions, total_count = list_leagues()
-    league_options = [
-        ft.dropdown.Option(key=league.id, text=league.name) 
-        for league in competitions
-    ]
-
-    league = ft.Dropdown(
-        label="Competição", 
-        width=170,
-        options=league_options,
-    )
-
     country = ft.Dropdown(
         label="País", 
         width=170,
@@ -188,11 +174,6 @@ def open_create_club(page: ft.Page, on_save_callback=None):
             country_obj = None
             if country.value:
                 country_obj = get_country(country.value)
-            
-            league_obj = None
-            if league.value:
-                league_obj = get_league(league.value)
-
             payload = {
                 "name": name.value.strip(),
                 "short_name": short_name.value.strip(),
@@ -204,7 +185,6 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 "primary_color": primary_color.value,
                 "secondary_color": secondary_color.value,
                 "country": country_obj,
-                "league": league_obj,
             }
 
             create_club(payload)
@@ -260,13 +240,6 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 [
                     federation,
                     country,
-                ],
-                spacing=20,
-            ),
-            
-            ft.Row(
-                [
-                    ft.Container(league, width=360),
                 ],
                 spacing=20,
             ),
