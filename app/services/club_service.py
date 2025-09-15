@@ -25,6 +25,10 @@ def create_club(data: ClubCreate) -> Club:
         s.refresh(club)
         return club
 
+def get_club(club_id: int) -> Club:
+    with get_session() as s:
+        return s.get(Club, club_id)
+
 def list_clubs(
     *,
     q: Optional[str] = None,

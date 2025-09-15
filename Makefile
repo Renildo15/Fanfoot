@@ -15,3 +15,6 @@ dep:
 
 populate:
 	PYTHONPATH=. python scripts/populate_country.py
+
+coach:
+	PYTHONPATH=. python scripts/populate_coach.py
