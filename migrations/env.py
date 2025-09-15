@@ -1,4 +1,5 @@
 from logging.config import fileConfig
+
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
@@ -11,6 +12,7 @@ fileConfig(config.config_file_name)
 
 target_metadata = SQLModel.metadata
 
+
 def run_migrations_offline():
     context.configure(
         url=str(engine.url),
@@ -22,6 +24,7 @@ def run_migrations_offline():
     )
     with context.begin_transaction():
         context.run_migrations()
+
 
 def run_migrations_online():
     connectable = engine_from_config(
@@ -40,6 +43,7 @@ def run_migrations_online():
         )
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

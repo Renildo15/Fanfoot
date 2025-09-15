@@ -1,5 +1,6 @@
 import flet as ft
 
+
 def stats_table():
     return ft.DataTable(
         columns=[

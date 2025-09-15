@@ -1,5 +1,5 @@
-
 from app.db.models import CompetitionType
+
 
 def get_type_value(value):
     match value:

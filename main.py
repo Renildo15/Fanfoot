@@ -1,8 +1,10 @@
 import flet as ft
-from app.utils import constants
-from app.views.initial import view as initial_view  # Importe aqui fora
-from app.views.editor import view as editor_view
+
 from app.db.db import init_db
+from app.utils import constants
+from app.views.editor import view as editor_view
+from app.views.initial import view as initial_view  # Importe aqui fora
+
 
 def _build_view(page: ft.Page):
     routes = {
@@ -11,11 +13,13 @@ def _build_view(page: ft.Page):
     }
     return routes.get(page.route, initial_view)(page)
 
+
 def on_route_change(e: ft.RouteChangeEvent):
     page = e.page
     page.clean()
     page.add(_build_view(page))
     page.update()
+
 
 def main(page: ft.Page):
 
@@ -29,7 +33,7 @@ def main(page: ft.Page):
     page.vertical_alignment = "stretch"
 
     page.on_route_change = on_route_change
-    
+
     # Adicione um fallback direto para testar
     try:
         page.go(page.route or "/")
@@ -37,6 +41,7 @@ def main(page: ft.Page):
         # Se houver erro, adicione a view diretamente
         page.add(initial_view(page))
         page.update()
+
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")

@@ -18,3 +18,7 @@ populate:
 
 coach:
 	PYTHONPATH=. python scripts/populate_coach.py
+
+format:
+	black .
+	isort .

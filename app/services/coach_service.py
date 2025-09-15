@@ -1,8 +1,10 @@
-from sqlmodel import SQLModel
-from typing import Optional, Tuple, List
-from sqlmodel import select, col, or_, func
+from typing import List, Optional, Tuple
+
+from sqlmodel import SQLModel, col, func, or_, select
+
 from app.db.db import get_session
 from app.db.models import Coach, CoachStyle
+
 
 class CoachCreate(SQLModel):
     full_name: str
@@ -12,9 +14,10 @@ class CoachCreate(SQLModel):
     reputation: int
     experience: int
     salary_weekly: float
-    contract_until: str 
+    contract_until: str
     club_id: Optional[int]
     country_id: int
+
 
 def list_coachs() -> List[Coach]:
     with get_session() as s:
@@ -23,11 +26,13 @@ def list_coachs() -> List[Coach]:
         coachs = results.all()
         # heroes = session.exec(select(Hero)).all() compact version
         return coachs
-    
-def get_coach(coach_id:int):
+
+
+def get_coach(coach_id: int):
     with get_session() as s:
         return s.get(Coach, coach_id)
-    
+
+
 def create_coach(data: CoachCreate) -> Coach:
     with get_session() as s:
         coach = Coach(**data)

@@ -1,19 +1,29 @@
 import flet as ft
+
+from app.db.models import Club
 from app.services.club_service import list_clubs
 from app.services.country_service import get_country
-from app.db.models import Club
+
 
 def clubs_table(clubs: Club):
     rows = []
 
     for club in clubs:
-        emblem = ft.Image(
-            src=club.crest_path if club.crest_path  else "/assets/placeholder_club.png",
-            width=32,
-            height=32,
-            fit=ft.ImageFit.CONTAIN,
-            border_radius=8
-        ) if club.crest_path else ft.Icon(ft.Icons.IMAGE, size=32)
+        emblem = (
+            ft.Image(
+                src=(
+                    club.crest_path
+                    if club.crest_path
+                    else "/assets/placeholder_club.png"
+                ),
+                width=32,
+                height=32,
+                fit=ft.ImageFit.CONTAIN,
+                border_radius=8,
+            )
+            if club.crest_path
+            else ft.Icon(ft.Icons.IMAGE, size=32)
+        )
 
         country = get_country(club.country_id)
         flag = ft.Image(
@@ -21,7 +31,7 @@ def clubs_table(clubs: Club):
             width=32,
             height=32,
             fit=ft.ImageFit.CONTAIN,
-            border_radius=8
+            border_radius=8,
         )
 
         rows.append(

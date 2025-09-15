@@ -1,5 +1,6 @@
 import flet as ft
 
+
 def header(page: ft.Page):
     return ft.Container(
         padding=ft.padding.symmetric(20, 12),
@@ -16,8 +17,11 @@ def header(page: ft.Page):
                 ft.Container(expand=True),
                 ft.Row(
                     [
-                        ft.OutlinedButton("Voltar", icon=ft.Icons.ARROW_BACK,
-                                            on_click=lambda e: page.go("/")),
+                        ft.OutlinedButton(
+                            "Voltar",
+                            icon=ft.Icons.ARROW_BACK,
+                            on_click=lambda e: page.go("/"),
+                        ),
                         ft.FilledButton("Salvar alterações", icon=ft.Icons.SAVE),
                     ],
                     spacing=10,

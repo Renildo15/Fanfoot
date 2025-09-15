@@ -1,7 +1,9 @@
 import flet as ft
-from app.services.league_service import list_leagues, Competition
-from app.utils.get_type_value import get_type_value
+
+from app.services.league_service import Competition, list_leagues
 from app.utils.get_country_display import get_country_display
+from app.utils.get_type_value import get_type_value
+
 
 def leagues_table():
 
@@ -35,7 +37,7 @@ def leagues_table():
             height=20,
             border_radius=10,
             bgcolor=competition.primary_color or "#000000",
-            tooltip=competition.primary_color or "N/A"
+            tooltip=competition.primary_color or "N/A",
         )
 
         secondary_color_display = ft.Container(
@@ -43,16 +45,24 @@ def leagues_table():
             height=20,
             border_radius=10,
             bgcolor=competition.secondary_color or "#FFFFFF",
-            tooltip=competition.secondary_color or "N/A"
+            tooltip=competition.secondary_color or "N/A",
         )
 
-        logo_display = ft.Image(
-            src=competition.logo_path if competition.logo_path else "/assets/placeholder_league.png",
-            width=32,
-            height=32,
-            fit=ft.ImageFit.CONTAIN,
-            border_radius=8
-        ) if competition.logo_path else ft.Icon(ft.Icons.IMAGE, size=32)
+        logo_display = (
+            ft.Image(
+                src=(
+                    competition.logo_path
+                    if competition.logo_path
+                    else "/assets/placeholder_league.png"
+                ),
+                width=32,
+                height=32,
+                fit=ft.ImageFit.CONTAIN,
+                border_radius=8,
+            )
+            if competition.logo_path
+            else ft.Icon(ft.Icons.IMAGE, size=32)
+        )
         rows.append(
             ft.DataRow(
                 cells=[

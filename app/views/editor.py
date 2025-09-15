@@ -1,16 +1,19 @@
 # app/views/editor.py
 import flet as ft
+
 from app.components.editor.header import header
-from app.components.editor.tables.leagues_table import leagues_table
+from app.components.editor.sections.section_toolbar_clubs import \
+    section_toolbar_clubs
+from app.components.editor.sections.section_toolbar_leagues import \
+    section_toolbar_leagues
+from app.components.editor.sections.section_toolbar_players import \
+    section_toolbar_players
+from app.components.editor.sections.section_toolbar_stats import \
+    section_toolbar_stats
 from app.components.editor.tables.clubs_table import clubs_table
+from app.components.editor.tables.leagues_table import leagues_table
 from app.components.editor.tables.players_table import players_table
 from app.components.editor.tables.stats_table import stats_table
-
-from app.components.editor.sections.section_toolbar_clubs import section_toolbar_clubs
-from app.components.editor.sections.section_toolbar_leagues import section_toolbar_leagues
-from app.components.editor.sections.section_toolbar_players import section_toolbar_players
-from app.components.editor.sections.section_toolbar_stats import section_toolbar_stats
-
 from app.services.club_service import list_clubs
 
 SECTIONS = [
@@ -37,22 +40,34 @@ def view(page: ft.Page) -> ft.Control:
     def build_section_content(name: str) -> ft.Control:
         if name == "Ligas":
             return ft.Column(
-                [section_toolbar_leagues(page), ft.Divider(opacity=0.2), leagues_table()],
-                spacing=12, expand=True,
+                [
+                    section_toolbar_leagues(page),
+                    ft.Divider(opacity=0.2),
+                    leagues_table(),
+                ],
+                spacing=12,
+                expand=True,
             )
         if name == "Clubes":
             return ft.Column(
-                [section_toolbar_clubs(page, refresh_callback=refresh_clubs), ft.Divider(opacity=0.2), clubs_table(clubs)],
-                spacing=12, expand=True,
+                [
+                    section_toolbar_clubs(page, refresh_callback=refresh_clubs),
+                    ft.Divider(opacity=0.2),
+                    clubs_table(clubs),
+                ],
+                spacing=12,
+                expand=True,
             )
         if name == "Jogadores":
             return ft.Column(
                 [section_toolbar_players(), ft.Divider(opacity=0.2), players_table()],
-                spacing=12, expand=True,
+                spacing=12,
+                expand=True,
             )
         return ft.Column(
             [section_toolbar_stats(), ft.Divider(opacity=0.2), stats_table()],
-            spacing=12, expand=True,
+            spacing=12,
+            expand=True,
         )
 
     # ---------- Sidebar ----------
@@ -67,12 +82,15 @@ def view(page: ft.Page) -> ft.Control:
                     content=ft.TextButton(
                         content=ft.Row(
                             [ft.Icon(icon, size=18), ft.Text(name, size=14)],
-                            spacing=10, vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                            spacing=10,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         ),
                         style=ft.ButtonStyle(
                             color=ft.Colors.WHITE,
                             overlay_color=ft.Colors.with_opacity(0.04, ft.Colors.WHITE),
-                            bgcolor=ft.Colors.with_opacity(0.12 if is_active else 0.04, ft.Colors.WHITE),
+                            bgcolor=ft.Colors.with_opacity(
+                                0.12 if is_active else 0.04, ft.Colors.WHITE
+                            ),
                             shape=ft.RoundedRectangleBorder(radius=12),
                             padding=ft.padding.symmetric(12, 10),
                         ),
@@ -103,7 +121,9 @@ def view(page: ft.Page) -> ft.Control:
                         ft.Container(
                             width=230,
                             padding=10,
-                            border=ft.border.all(1, ft.Colors.with_opacity(0.08, ft.Colors.WHITE)),
+                            border=ft.border.all(
+                                1, ft.Colors.with_opacity(0.08, ft.Colors.WHITE)
+                            ),
                             border_radius=12,
                             bgcolor=ft.Colors.with_opacity(0.06, ft.Colors.WHITE),
                             content=sidebar_col,
@@ -112,7 +132,9 @@ def view(page: ft.Page) -> ft.Control:
                         ft.Container(
                             expand=True,
                             padding=16,
-                            border=ft.border.all(1, ft.Colors.with_opacity(0.08, ft.Colors.WHITE)),
+                            border=ft.border.all(
+                                1, ft.Colors.with_opacity(0.08, ft.Colors.WHITE)
+                            ),
                             border_radius=12,
                             bgcolor=ft.Colors.with_opacity(0.04, ft.Colors.WHITE),
                             content=content_container,

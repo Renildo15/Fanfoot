@@ -1,7 +1,10 @@
 import flet as ft
-from app.utils.caption import caption          # se sua função caption está em app/utils/caption.py
+
+from app.utils.caption import \
+    caption  # se sua função caption está em app/utils/caption.py
 # Se estiver em outro lugar, troque a importação conforme sua estrutura.
-from app.utils.constants import APP_VERSION,ROUTES
+from app.utils.constants import APP_VERSION, ROUTES
+
 
 def view(page: ft.Page) -> ft.Control:
     # Top bar
@@ -36,29 +39,50 @@ def view(page: ft.Page) -> ft.Control:
         controls=[
             ft.FilledTonalButton(
                 content=ft.Row(
-                    [ft.Icon(ft.Icons.SPORTS_SOCCER, size=18), ft.Text("Novo Jogo", size=14, weight=ft.FontWeight.W_600)],
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=8,
+                    [
+                        ft.Icon(ft.Icons.SPORTS_SOCCER, size=18),
+                        ft.Text("Novo Jogo", size=14, weight=ft.FontWeight.W_600),
+                    ],
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=8,
                 ),
                 height=44,
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12), padding=ft.padding.symmetric(14, 10)),
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=12),
+                    padding=ft.padding.symmetric(14, 10),
+                ),
                 on_click=lambda e: page.snack_bar.open() if page.snack_bar else None,
             ),
             ft.FilledTonalButton(
                 content=ft.Row(
-                    [ft.Icon(ft.Icons.DOWNLOAD, size=18), ft.Text("Carregar", size=14, weight=ft.FontWeight.W_600)],
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=8,
+                    [
+                        ft.Icon(ft.Icons.DOWNLOAD, size=18),
+                        ft.Text("Carregar", size=14, weight=ft.FontWeight.W_600),
+                    ],
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=8,
                 ),
                 height=44,
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12), padding=ft.padding.symmetric(14, 10)),
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=12),
+                    padding=ft.padding.symmetric(14, 10),
+                ),
             ),
             ft.FilledTonalButton(
                 content=ft.Row(
-                    [ft.Icon(ft.Icons.BRUSH, size=18), ft.Text("Editor", size=14, weight=ft.FontWeight.W_600)],
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=8,
+                    [
+                        ft.Icon(ft.Icons.BRUSH, size=18),
+                        ft.Text("Editor", size=14, weight=ft.FontWeight.W_600),
+                    ],
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=8,
                 ),
                 height=44,
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12), padding=ft.padding.symmetric(14, 10)),
-                on_click=lambda e: e.page.go(ROUTES["editor"])
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=12),
+                    padding=ft.padding.symmetric(14, 10),
+                ),
+                on_click=lambda e: e.page.go(ROUTES["editor"]),
             ),
         ],
         spacing=12,
@@ -70,15 +94,24 @@ def view(page: ft.Page) -> ft.Control:
     footer_right = ft.Column(
         [
             ft.Row(
-                [ft.Icon(ft.Icons.ALTERNATE_EMAIL, size=16), ft.Text("@Footfantasy", size=12, weight=ft.FontWeight.W_600)],
-                spacing=6, vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                [
+                    ft.Icon(ft.Icons.ALTERNATE_EMAIL, size=16),
+                    ft.Text("@Footfantasy", size=12, weight=ft.FontWeight.W_600),
+                ],
+                spacing=6,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
             ft.Row(
-                [ft.Icon(ft.Icons.LINK, size=14), ft.Text("links & comunidade", size=11, color=ft.Colors.WHITE70)],
-                spacing=6, vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                [
+                    ft.Icon(ft.Icons.LINK, size=14),
+                    ft.Text("links & comunidade", size=11, color=ft.Colors.WHITE70),
+                ],
+                spacing=6,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
         ],
-        spacing=4, horizontal_alignment=ft.CrossAxisAlignment.END,
+        spacing=4,
+        horizontal_alignment=ft.CrossAxisAlignment.END,
     )
 
     bottom_bar = ft.Row(
@@ -93,7 +126,9 @@ def view(page: ft.Page) -> ft.Control:
             controls=[
                 ft.Container(height=8),
                 top_bar,
-                ft.Container(expand=True, alignment=ft.alignment.center, content=title_watermark),
+                ft.Container(
+                    expand=True, alignment=ft.alignment.center, content=title_watermark
+                ),
                 bottom_bar,
                 ft.Container(height=8),
             ],

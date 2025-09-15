@@ -1,5 +1,6 @@
 import flet as ft
 
+
 def players_table():
     return ft.DataTable(
         columns=[

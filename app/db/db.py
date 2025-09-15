@@ -1,5 +1,6 @@
 from pathlib import Path
-from sqlmodel import SQLModel, create_engine, Session
+
+from sqlmodel import Session, SQLModel, create_engine
 
 DB_FILE = Path("data/footfantasy.db")
 DB_FILE.parent.mkdir(exist_ok=True, parents=True)
@@ -10,9 +11,12 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
 )
 
+
 def init_db():
     from app.db import models
+
     SQLModel.metadata.create_all(engine)
+
 
 def get_session():
     return Session(engine)
