@@ -9,12 +9,13 @@ from app.db.models import ClubFederation
 from app.services.club_service import create_club
 from app.services.coach_service import get_coach, list_coachs
 from app.services.country_service import get_countries, get_country
+from app.services.file_service import FileService
 
 
 def open_create_club(page: ft.Page, on_save_callback=None):
     all_countries = get_countries()
     all_coachs = list_coachs()
-
+    file_service = FileService()
     coachs_options = [
         ft.dropdown.Option(key=c.id, text=c.full_name, content=ft.Text(c.full_name))
         for c in all_coachs
@@ -52,6 +53,8 @@ def open_create_club(page: ft.Page, on_save_callback=None):
     )
 
     coach = ft.Dropdown(label="Técnico", width=170, options=coachs_options)
+
+    stadium = ft.TextField(label="Estádio", width=170)
 
     primary_color = ft.TextField(
         label="Cor primária", width=170, max_length=7, value="#000000"
@@ -119,6 +122,8 @@ def open_create_club(page: ft.Page, on_save_callback=None):
             primary_color.value = str(data["primary_color"])
         if "secondary_color" in data:
             secondary_color.value = str(data["secondary_color"])
+        if "stadium" in data:
+            stadium.value = str(data["stadium"])
         if "crest_path" in data and data["crest_path"]:
             chosen_logo["path"] = data["crest_path"]
             logo_preview.src = data["crest_path"]
@@ -143,10 +148,8 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                     ft.SnackBar(ft.Text("Arquivo JSON selecionado. Processando..."))
                 )
                 if hasattr(file, "path") and file.path:
-                    with open(file.path, "r", encoding="utf-8") as f:
-                        json_data = json.load(f)
-                        print(json_data)
-                        fill_form_from_data(json_data)
+                    json_data = file_service.get_json(file.path)
+                    fill_form_from_data(json_data)
                     page.open(
                         ft.SnackBar(ft.Text("Arquivo JSON selecionado processando."))
                     )
@@ -159,13 +162,10 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                     ft.SnackBar(ft.Text("Arquivo CSV selecionado. Processando..."))
                 )
                 if hasattr(file, "path") and file.path:
-                    with open(file.path, "r", encoding="utf-8") as f:
-                        csv_reader = csv.DictReader(f)
-                        csv_data = list(csv_reader)
-
-                        if csv_data:
-                            fill_form_from_data(csv_data[0])
-                        page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
+                    csv_data = file_service.get_csv(file.path)
+                    if csv_data:
+                        fill_form_from_data(csv_data[0])
+                    page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
                 else:
                     page.snack_bar = ft.SnackBar(
                         ft.Text("Modo web: upload não implementado")
@@ -230,6 +230,7 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 "secondary_color": secondary_color.value,
                 "country": country_obj,
                 "coach": coach_obj,
+                "stadium": stadium.value
             }
 
             create_club(payload)
@@ -284,7 +285,11 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 spacing=20,
             ),
             ft.Row(
-                [federation, country, coach],
+                [federation, country],
+                spacing=20,
+            ),
+             ft.Row(
+                [coach, stadium],
                 spacing=20,
             ),
             ft.Row(
