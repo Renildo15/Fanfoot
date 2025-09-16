@@ -1,5 +1,3 @@
-import csv
-import json
 import re
 
 import flet as ft
@@ -230,7 +228,7 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 "secondary_color": secondary_color.value,
                 "country": country_obj,
                 "coach": coach_obj,
-                "stadium": stadium.value
+                "stadium": stadium.value,
             }
 
             create_club(payload)
@@ -288,7 +286,7 @@ def open_create_club(page: ft.Page, on_save_callback=None):
                 [federation, country],
                 spacing=20,
             ),
-             ft.Row(
+            ft.Row(
                 [coach, stadium],
                 spacing=20,
             ),
