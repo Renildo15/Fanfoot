@@ -29,7 +29,7 @@ class ImportData:
                 page.update()
                 return
 
-            if int(competition.get("points_win")) == 0 or int(competition.get("points_draw")) == 0 or int(competition.get("points_lose")) == 0:
+            if int(competition.get("points_win")) == 0 or int(competition.get("points_draw")) == 0:
                 page.open(ft.SnackBar(ft.Text(f"Preencha os pontos por vitória, empate e derrota.")))
                 page.update()
                 return

@@ -22,6 +22,7 @@ def open_csv_modal(page: ft.Page, clubs: List[Club]=None, competitions: List[Com
     content = c_club if clubs else c_competition
 
     btn_actions = []
+    title = "Importar Clubes do CSV" if clubs else "Importar Competições do CSV"
     if clubs:
         btn_actions.append(ft.TextButton("Importar clubes", on_click=import_clubs))
     if competitions:
@@ -31,7 +32,7 @@ def open_csv_modal(page: ft.Page, clubs: List[Club]=None, competitions: List[Com
 
     modal = ft.AlertDialog(
         modal=True,
-        title=ft.Text("Importar Clubes do CSV"),
+        title=ft.Text(title),
         content=content,
         actions=[
             ft.Row(

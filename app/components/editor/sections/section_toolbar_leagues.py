@@ -35,7 +35,7 @@ def section_toolbar_leagues(page: ft.Page, refresh_callback=None):
                     csv_data = file_service.get_csv(file.path)
                     page.open(
                         open_csv_modal(
-                            page, clubs=csv_data, on_save_callback=refresh_callback
+                            page, competitions=csv_data, on_save_callback=refresh_callback
                         )
                     )
                     page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))

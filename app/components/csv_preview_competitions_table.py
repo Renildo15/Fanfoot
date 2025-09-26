@@ -27,8 +27,9 @@ def csv_preview_competitions_table(competitions_data: List[Competition]):
                         fit=ft.ImageFit.CONTAIN,
                         border_radius=8,
                     )
-            except:
-                pass
+            except Exception as ex:
+                print(f"Erro ao obter bandeira do país {country_id}: {ex}")
+                
 
         rows.append(
             ft.DataRow(
@@ -37,9 +38,7 @@ def csv_preview_competitions_table(competitions_data: List[Competition]):
                     ft.DataCell(ft.Text(competition.get("type", "N/A"))),
                     ft.DataCell(ft.Text(str(competition.get("level", "N/A")))),
                     ft.DataCell(country_flag),
-                    ft.DataCell(ft.Text(str(competition.get("points_win", "N/A")))),
-                    ft.DataCell(ft.Text(str(competition.get("points_draw", "N/A")))),
-                    ft.DataCell(ft.Text(str(competition.get("points_lose", "N/A")))),
+                    ft.DataCell(ft.Text(str(competition.get("max_teams", "N/A")))),
                 ]
             )
         )
@@ -50,15 +49,8 @@ def csv_preview_competitions_table(competitions_data: List[Competition]):
             ft.DataColumn(ft.Text("Tipo")),
             ft.DataColumn(ft.Text("Nível")),
             ft.DataColumn(ft.Text("País")),
-            ft.DataColumn(ft.Text("Pontos Vitória")),
-            ft.DataColumn(ft.Text("Pontos Empate")),
-            ft.DataColumn(ft.Text("Pontos Derrota")),
+            ft.DataColumn(ft.Text("Núm. Times")),
         ],
         rows=rows,
-        column_spacing=20,
-        heading_row_color=ft.Colors.GREY_200,
-        border=ft.border.all(1, ft.Colors.GREY_300),
-        border_radius=8,
-        horizontal_lines=True,
-        vertical_lines=False,
+        
     )

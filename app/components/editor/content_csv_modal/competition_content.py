@@ -3,20 +3,21 @@ from app.components.csv_preview_competitions_table import csv_preview_competitio
 from app.db.models import Competition
 from typing import List
 
-def competition_content(clubs: List[Competition]):
+def competition_content(competitionns: List[Competition]):
     return ft.Column(
         [
             ft.Text(
-                f"Pré-visualização - {len(clubs)} competições encontradas",
+                f"Pré-visualização - {len(competitionns)} competições encontradas",
                 size=16,
                 weight=ft.FontWeight.BOLD,
             ),
             ft.Divider(),
             ft.Container(
-                csv_preview_competitions_table(clubs),
+                content=csv_preview_competitions_table(competitionns),
                 border=ft.border.all(1, ft.Colors.GREY_200),
                 border_radius=8,
                 padding=10,
+                
             ),
             ft.Text(
                 "Verifique os dados antes de importar",

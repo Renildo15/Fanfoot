@@ -48,6 +48,7 @@ class PlayerStatus(str, enum.Enum):
 class CompetitionType(str, enum.Enum):
     LEAGUE = "LEAGUE"
     CUP = "CUP"
+    LEAGUE_KNOCKOUT = "LEAGUE & KNOCKOUT"
 
 
 class ClubFederation(str, enum.Enum):
