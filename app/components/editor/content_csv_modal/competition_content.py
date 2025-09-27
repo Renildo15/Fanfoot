@@ -1,7 +1,11 @@
-import flet as ft
-from app.components.csv_preview_competitions_table import csv_preview_competitions_table
-from app.db.models import Competition
 from typing import List
+
+import flet as ft
+
+from app.components.csv_preview_competitions_table import \
+    csv_preview_competitions_table
+from app.db.models import Competition
+
 
 def competition_content(competitionns: List[Competition]):
     return ft.Column(
@@ -17,7 +21,6 @@ def competition_content(competitionns: List[Competition]):
                 border=ft.border.all(1, ft.Colors.GREY_200),
                 border_radius=8,
                 padding=10,
-                
             ),
             ft.Text(
                 "Verifique os dados antes de importar",

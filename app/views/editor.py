@@ -47,7 +47,7 @@ def view(page: ft.Page) -> ft.Control:
                 ],
                 spacing=12,
                 expand=True,
-                scroll=ft.ScrollMode.AUTO
+                scroll=ft.ScrollMode.AUTO,
             )
         if name == "Clubes":
             return ft.Column(
@@ -58,20 +58,20 @@ def view(page: ft.Page) -> ft.Control:
                 ],
                 spacing=12,
                 expand=True,
-                scroll=ft.ScrollMode.AUTO
+                scroll=ft.ScrollMode.AUTO,
             )
         if name == "Jogadores":
             return ft.Column(
                 [section_toolbar_players(), ft.Divider(opacity=0.2), players_table()],
                 spacing=12,
                 expand=True,
-                scroll=ft.ScrollMode.AUTO
+                scroll=ft.ScrollMode.AUTO,
             )
         return ft.Column(
             [section_toolbar_stats(), ft.Divider(opacity=0.2), stats_table()],
             spacing=12,
             expand=True,
-            scroll=ft.ScrollMode.AUTO
+            scroll=ft.ScrollMode.AUTO,
         )
 
     # ---------- Sidebar ----------

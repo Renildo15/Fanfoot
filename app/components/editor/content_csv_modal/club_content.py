@@ -1,7 +1,10 @@
+from typing import List
+
 import flet as ft
+
 from app.components.csv_preview_table import csv_preview_table
 from app.db.models import Club
-from typing import List
+
 
 def club_content(clubs: List[Club]):
     return ft.Column(

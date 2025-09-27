@@ -1,4 +1,3 @@
-
 from typing import List
 
 import flet as ft
@@ -29,7 +28,6 @@ def csv_preview_competitions_table(competitions_data: List[Competition]):
                     )
             except Exception as ex:
                 print(f"Erro ao obter bandeira do país {country_id}: {ex}")
-                
 
         rows.append(
             ft.DataRow(
@@ -52,5 +50,4 @@ def csv_preview_competitions_table(competitions_data: List[Competition]):
             ft.DataColumn(ft.Text("Núm. Times")),
         ],
         rows=rows,
-        
     )

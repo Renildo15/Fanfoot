@@ -1,20 +1,25 @@
 import re
 from typing import List
+
 import flet as ft
-from app.db.models import Competition, Club
+
+from app.db.models import Club, Competition
+from app.services.club_service import create_club
 from app.services.country_service import get_country
 from app.services.league_service import create_league
-from app.services.club_service import create_club
+
 
 class ImportData:
     pattern = re.compile(r"^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$")
 
     @classmethod
-    def data_import_competitions(cls, competitions: List[Competition], page: ft.Page, on_save_callback=None):
+    def data_import_competitions(
+        cls, competitions: List[Competition], page: ft.Page, on_save_callback=None
+    ):
         for competition in competitions:
-            if not cls.pattern.match(competition.get("primary_color")) or not cls.pattern.match(
-                competition.get("secondary_color")
-            ):
+            if not cls.pattern.match(
+                competition.get("primary_color")
+            ) or not cls.pattern.match(competition.get("secondary_color")):
                 page.open(ft.SnackBar(ft.Text(f"Adicione uma hexadecimal válido.")))
                 page.update()
                 return
@@ -29,8 +34,15 @@ class ImportData:
                 page.update()
                 return
 
-            if int(competition.get("points_win")) == 0 or int(competition.get("points_draw")) == 0:
-                page.open(ft.SnackBar(ft.Text(f"Preencha os pontos por vitória, empate e derrota.")))
+            if (
+                int(competition.get("points_win")) == 0
+                or int(competition.get("points_draw")) == 0
+            ):
+                page.open(
+                    ft.SnackBar(
+                        ft.Text(f"Preencha os pontos por vitória, empate e derrota.")
+                    )
+                )
                 page.update()
                 return
 
@@ -59,20 +71,22 @@ class ImportData:
                     on_save_callback()
 
                 page.open(
-                    ft.SnackBar(ft.Text(f"{len(competitions)} ligas importadas com sucesso!"))
+                    ft.SnackBar(
+                        ft.Text(f"{len(competitions)} ligas importadas com sucesso!")
+                    )
                 )
             except Exception as ex:
                 page.open(ft.SnackBar(ft.Text(f"Valores inválidos: {ex}")))
                 print(ex)
                 page.update()
                 return
-            
+
     @classmethod
     def data_import_clubs(cls, clubs: List[Club], page: ft.Page, on_save_callback=None):
         for club in clubs:
-            if not cls.pattern.match(club.get("primary_color")) or not cls.pattern.match(
-                club.get("secondary_color")
-            ):
+            if not cls.pattern.match(
+                club.get("primary_color")
+            ) or not cls.pattern.match(club.get("secondary_color")):
                 page.open(ft.SnackBar(ft.Text(f"Adicione uma hexadecimal válido.")))
                 page.update()
                 return
@@ -89,12 +103,24 @@ class ImportData:
 
                 payload = {
                     "name": club.get("name").strip(),
-                    "short_name": club.get("short_name").strip() if club.get("short_name") else None,
-                    "reputation": int(club.get("reputation")) if club.get("reputation") else 0,
+                    "short_name": (
+                        club.get("short_name").strip()
+                        if club.get("short_name")
+                        else None
+                    ),
+                    "reputation": (
+                        int(club.get("reputation")) if club.get("reputation") else 0
+                    ),
                     "budget": float(club.get("budget")) if club.get("budget") else 0.0,
-                    "wage_budget": float(club.get("wage_budget")) if club.get("wage_budget") else 0.0,
+                    "wage_budget": (
+                        float(club.get("wage_budget"))
+                        if club.get("wage_budget")
+                        else 0.0
+                    ),
                     "federation": club.get("federation"),
-                    "stadium": club.get("stadium").strip() if club.get("stadium") else None,
+                    "stadium": (
+                        club.get("stadium").strip() if club.get("stadium") else None
+                    ),
                     "crest_path": club.get("crest_path"),
                     "primary_color": club.get("primary_color"),
                     "secondary_color": club.get("secondary_color"),

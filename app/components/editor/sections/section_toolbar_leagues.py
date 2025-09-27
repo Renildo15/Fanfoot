@@ -1,8 +1,9 @@
 import flet as ft
-from app.components.editor.open_csv_modal import open_csv_modal
-from app.services.file_service import FileService
+
 from app.components.editor.open_create_league_dialog import \
     open_create_league_dialog
+from app.components.editor.open_csv_modal import open_csv_modal
+from app.services.file_service import FileService
 
 
 def section_toolbar_leagues(page: ft.Page, refresh_callback=None):
@@ -35,7 +36,9 @@ def section_toolbar_leagues(page: ft.Page, refresh_callback=None):
                     csv_data = file_service.get_csv(file.path)
                     page.open(
                         open_csv_modal(
-                            page, competitions=csv_data, on_save_callback=refresh_callback
+                            page,
+                            competitions=csv_data,
+                            on_save_callback=refresh_callback,
                         )
                     )
                     page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
