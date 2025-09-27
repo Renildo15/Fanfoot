@@ -28,7 +28,17 @@ def leagues_table():
                     return f"{competition.level}° divisão"
                 case 8:
                     return f"{competition.level}° divisão"
-        return str(competition.level)
+        elif competition.type == "CUP":
+            match competition.level:
+                case 1:
+                    return "Nacional"
+                case 2:
+                    return "Regional"
+                case 3:
+                    return "Local"
+        elif competition.type == "LEAGUE_KNOCKOUT":
+            return "Eliminatória"
+        return "N/A"
 
     rows = []
     for competition in competitions:

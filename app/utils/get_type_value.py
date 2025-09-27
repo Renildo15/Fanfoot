@@ -7,3 +7,5 @@ def get_type_value(value):
             return "Liga"
         case CompetitionType.CUP.value:
             return "Copa"
+        case CompetitionType.LEAGUE_KNOCKOUT.value:
+            return "Liga eliminatória"
