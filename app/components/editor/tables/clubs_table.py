@@ -39,7 +39,6 @@ def clubs_table(clubs: Club):
                 cells=[
                     ft.DataCell(emblem),
                     ft.DataCell(ft.Text(club.name)),
-                    ft.DataCell(ft.Text(club.short_name)),
                     ft.DataCell(flag),
                     ft.DataCell(ft.Text(club.reputation)),
                 ]
@@ -50,7 +49,6 @@ def clubs_table(clubs: Club):
         columns=[
             ft.DataColumn(ft.Text("Emblema")),
             ft.DataColumn(ft.Text("Clube")),
-            ft.DataColumn(ft.Text("Sigla")),
             ft.DataColumn(ft.Text("País")),
             ft.DataColumn(ft.Text("Reputação")),
         ],

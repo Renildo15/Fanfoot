@@ -1,6 +1,7 @@
 # app/views/editor.py
 import flet as ft
 
+from app.components.editor.clubs.club_info import club_info
 from app.components.editor.header import header
 from app.components.editor.sections.section_toolbar_clubs import \
     section_toolbar_clubs
@@ -14,7 +15,6 @@ from app.components.editor.tables.clubs_table import clubs_table
 from app.components.editor.tables.leagues_table import leagues_table
 from app.components.editor.tables.players_table import players_table
 from app.components.editor.tables.stats_table import stats_table
-from app.components.editor.clubs.club_info import club_info
 from app.services.club_service import list_clubs
 
 SECTIONS = [
@@ -51,33 +51,43 @@ def view(page: ft.Page) -> ft.Control:
                 scroll=ft.ScrollMode.AUTO,
             )
         if name == "Clubes":
-            return ft.Row(
+            return ft.Column(
                 [
-                    # Coluna da esquerda
-                    ft.Column(
+                    section_toolbar_clubs(page, refresh_callback=refresh_clubs),
+                    ft.Row(
                         [
-                            section_toolbar_clubs(page, refresh_callback=refresh_clubs),
-                            ft.Divider(opacity=0.2),
-                            clubs_table(clubs),
+                            # Coluna da esquerda
+                            ft.Column(
+                                [
+                                    clubs_table(clubs),
+                                ],
+                                spacing=12,
+                                expand=2,  # ocupa mais espaço
+                                scroll=ft.ScrollMode.AUTO,
+                            ),
+                            # Coluna da direita
+                            ft.Column(
+                                [
+                                    club_info(),
+                                ],
+                                spacing=12,
+                                expand=2,  # ocupa menos espaço
+                                scroll=ft.ScrollMode.AUTO,
+                            ),
                         ],
-                        spacing=12,
-                        expand=2,  # ocupa mais espaço
-                        scroll=ft.ScrollMode.AUTO,
-                    ),
-                    # Coluna da direita
-                    ft.Column(
-                        [
-                            club_info(),
-                        ],
-                        spacing=12,
-                        expand=2,  # ocupa menos espaço
-                        scroll=ft.ScrollMode.AUTO,
+                        expand=True,
+                        spacing=10,  # espaço entre colunas
+                        alignment=ft.MainAxisAlignment.START,
+                        vertical_alignment=ft.CrossAxisAlignment.START
                     ),
                 ],
+                spacing=20,
+                horizontal_alignment=ft.CrossAxisAlignment.START,
                 expand=True,
-                spacing=10,  # espaço entre colunas
-                alignment=ft.MainAxisAlignment.START,
+                scroll=ft.ScrollMode.AUTO,
+
             )
+
         if name == "Jogadores":
             return ft.Column(
                 [section_toolbar_players(), ft.Divider(opacity=0.2), players_table()],
