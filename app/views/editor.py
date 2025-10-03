@@ -3,19 +3,17 @@ import flet as ft
 
 from app.components.editor.clubs.club_info import club_info
 from app.components.editor.header import header
-from app.components.editor.sections.section_toolbar_clubs import \
-    section_toolbar_clubs
-from app.components.editor.sections.section_toolbar_leagues import \
-    section_toolbar_leagues
-from app.components.editor.sections.section_toolbar_players import \
-    section_toolbar_players
-from app.components.editor.sections.section_toolbar_stats import \
-    section_toolbar_stats
+from app.components.editor.sections.section_toolbar_clubs import section_toolbar_clubs
+from app.components.editor.sections.section_toolbar_leagues import section_toolbar_leagues
+from app.components.editor.sections.section_toolbar_players import section_toolbar_players
+from app.components.editor.sections.section_toolbar_stats import section_toolbar_stats
 from app.components.editor.tables.clubs_table import clubs_table
 from app.components.editor.tables.leagues_table import leagues_table
 from app.components.editor.tables.players_table import players_table
 from app.components.editor.tables.stats_table import stats_table
 from app.services.club_service import list_clubs
+from app.db.models import Club
+from app.services.club_service import get_club
 
 SECTIONS = [
     ("Ligas", ft.Icons.EVENT_AVAILABLE_OUTLINED),
@@ -24,19 +22,39 @@ SECTIONS = [
     ("Estatísticas", ft.Icons.BAR_CHART_OUTLINED),
 ]
 
-
 def view(page: ft.Page) -> ft.Control:
-    current = {"name": "Ligas"}  # estado simples
+    current = {"name": "Ligas"}
     clubs, total = list_clubs()
-    clubs_table_ref = ft.Ref[ft.DataTable]()
+    club: Club = None
+    
+    # Referências para os componentes que precisam ser atualizados
+    club_info_ref = ft.Ref[ft.Column]()
+    right_column_ref = ft.Ref[ft.Column]()
+    
     # ---------- Conteúdo da área principal ----------
     content_container = ft.Container(expand=True)
 
     def refresh_clubs():
+        nonlocal clubs
         clubs, total = list_clubs()
-        # Atualiza a tabela
-        clubs_table_ref.current = clubs_table(clubs)
-        page.update()
+        # Reconstroi todo o conteúdo da seção de clubes
+        if current["name"] == "Clubes":
+            content_container.content = build_section_content("Clubes")
+            page.update()
+
+    def rebuild_club_info(club_id: str):
+        nonlocal club
+        try:
+            club = get_club(club_id)
+            print(f"Clube carregado: {club.name}")
+        except Exception as ex:
+            print(f"Erro ao obter clube: {ex}")
+            club = None
+        
+        # Atualiza o club_info na coluna direita
+        if right_column_ref.current:
+            right_column_ref.current.controls = [club_info(club)]
+            page.update()
 
     def build_section_content(name: str) -> ft.Control:
         if name == "Ligas":
@@ -51,32 +69,34 @@ def view(page: ft.Page) -> ft.Control:
                 scroll=ft.ScrollMode.AUTO,
             )
         if name == "Clubes":
+            # Coluna direita com club_info
+            right_col = ft.Column(
+                [club_info(club)],
+                spacing=12,
+                expand=2,
+                scroll=ft.ScrollMode.AUTO,
+            )
+            right_column_ref.current = right_col
+            
             return ft.Column(
                 [
                     section_toolbar_clubs(page, refresh_callback=refresh_clubs),
                     ft.Row(
                         [
-                            # Coluna da esquerda
+                            # Coluna da esquerda - tabela de clubes
                             ft.Column(
                                 [
-                                    clubs_table(clubs),
+                                    clubs_table(clubs, rebuild_club_info),
                                 ],
                                 spacing=12,
-                                expand=2,  # ocupa mais espaço
+                                expand=2,
                                 scroll=ft.ScrollMode.AUTO,
                             ),
-                            # Coluna da direita
-                            ft.Column(
-                                [
-                                    club_info(),
-                                ],
-                                spacing=12,
-                                expand=2,  # ocupa menos espaço
-                                scroll=ft.ScrollMode.AUTO,
-                            ),
+                            # Coluna da direita - informações do clube
+                            right_col,
                         ],
                         expand=True,
-                        spacing=10,  # espaço entre colunas
+                        spacing=10,
                         alignment=ft.MainAxisAlignment.START,
                         vertical_alignment=ft.CrossAxisAlignment.START
                     ),
@@ -85,7 +105,6 @@ def view(page: ft.Page) -> ft.Control:
                 horizontal_alignment=ft.CrossAxisAlignment.START,
                 expand=True,
                 scroll=ft.ScrollMode.AUTO,
-
             )
 
         if name == "Jogadores":

@@ -5,7 +5,7 @@ from app.services.club_service import list_clubs
 from app.services.country_service import get_country
 
 
-def clubs_table(clubs: Club):
+def clubs_table(clubs: Club, rebuild_club_info_callback: callable) :
     rows = []
 
     for club in clubs:
@@ -34,11 +34,16 @@ def clubs_table(clubs: Club):
             border_radius=8,
         )
 
+        btn_info_club = ft.TextButton(
+            content=ft.Text(club.name),
+            on_click=lambda e, club_id=club.id: rebuild_club_info_callback(club_id),
+        )
+
         rows.append(
             ft.DataRow(
                 cells=[
                     ft.DataCell(emblem),
-                    ft.DataCell(ft.Text(club.name)),
+                    ft.DataCell(btn_info_club),
                     ft.DataCell(flag),
                     ft.DataCell(ft.Text(club.reputation)),
                 ]

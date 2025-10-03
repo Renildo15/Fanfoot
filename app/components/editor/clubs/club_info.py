@@ -1,14 +1,29 @@
 import flet as ft
+from app.db.models import Club
 
-
-def club_info():
+def club_info(club: Club):
+    if club is None:
+        return ft.Column(
+            [
+                ft.Container(
+                    content=ft.Text(
+                        "Selecione um clube para ver as informações",
+                        size=16,
+                        color=ft.Colors.GREY_500,
+                    ),
+                    padding=20,
+                    alignment=ft.alignment.center,
+                )
+            ]
+        )
+    
     return ft.Column(
         [
             ft.Row(
                 [
                     ft.Container(
                         content=ft.Image(
-                            src="/assets/placeholder_club.png",
+                            src=club.crest_path if club.crest_path else "/assets/placeholder_club.png",
                             width=64,
                             height=64,
                             fit=ft.ImageFit.CONTAIN,
@@ -21,9 +36,9 @@ def club_info():
                     ),
                     ft.Column(
                         [
-                            ft.Text("Nome do Clube", size=20, weight="bold"),
+                            ft.Text(club.name, size=20, weight="bold"),
                             ft.Text(
-                                "Sigla do Clube",
+                                club.short_name if club.short_name else "Sem sigla",
                                 size=14,
                                 color=ft.Colors.GREY_600,
                             ),
@@ -31,20 +46,20 @@ def club_info():
                     ),
                     ft.Column(
                         [
-                            ft.Text("Reputação: 0", size=20, weight="bold"),
+                            ft.Text(f"Reputacao: {club.reputation}", size=20, weight="bold"),
                             ft.Row(
                                 [
                                     ft.Row(
                                         [
                                             ft.Text(
-                                                "Cor Primária: ",
+                                                "Cor Primaria: ",
                                                 size=14,
                                                 color=ft.Colors.GREY_600,
                                             ),
                                             ft.Container(
                                                 width=20,
                                                 height=20,
-                                                bgcolor=ft.Colors.BLUE,
+                                                bgcolor=ft.Colors.BLUE,  # Você pode adicionar cores ao modelo Club
                                                 border_radius=4,
                                             ),
                                         ]
@@ -52,14 +67,14 @@ def club_info():
                                     ft.Row(
                                         [
                                             ft.Text(
-                                                "Cor Secundária: ",
+                                                "Cor Secundaria: ",
                                                 size=14,
                                                 color=ft.Colors.GREY_600,
                                             ),
                                             ft.Container(
                                                 width=20,
                                                 height=20,
-                                                bgcolor=ft.Colors.RED,
+                                                bgcolor=ft.Colors.RED,  # Você pode adicionar cores ao modelo Club
                                                 border_radius=4,
                                             ),
                                         ]
@@ -73,7 +88,6 @@ def club_info():
                             ft.Container(
                                 content=ft.Image(
                                     src="/assets/placeholder_country.png",
-                                    # here is flag´s country width and height
                                     width=192,
                                     height=128,
                                     fit=ft.ImageFit.CONTAIN,
@@ -87,12 +101,12 @@ def club_info():
                                     ft.IconButton(
                                         icon=ft.Icons.EDIT_OUTLINED,
                                         tooltip="Editar Clube",
-                                        on_click=lambda e: print("Editar Clube"),
+                                        on_click=lambda e: print(f"Editar Clube: {club.name}"),
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.DELETE_OUTLINED,
                                         tooltip="Excluir Clube",
-                                        on_click=lambda e: print("Excluir Clube"),
+                                        on_click=lambda e: print(f"Excluir Clube: {club.name}"),
                                     ),
                                 ]
                             ),
@@ -103,23 +117,23 @@ def club_info():
             ),
             ft.Row(
                 [
-                    ft.Text("Estádio: Nome do Estádio", size=14),
-                    ft.Text("Tecnico: Nome do Técnico", size=14),
+                    ft.Text(f"Estadio: {club.stadium if club.stadium else 'Não definido'}", size=14),
+                    # ft.Text(f"Tecnico: {club.coach if club.coach else 'Não definido'}", size=14),
                 ]
             ),
             ft.Divider(opacity=0.2),
             ft.DataTable(
                 columns=[
                     ft.DataColumn(ft.Text("Jogador")),
-                    ft.DataColumn(ft.Text("Posição")),
-                    ft.DataColumn(ft.Text("País")),
+                    ft.DataColumn(ft.Text("Posicao")),
+                    ft.DataColumn(ft.Text("Pais")),
                 ],
                 rows=[
                     ft.DataRow(
                         cells=[
                             ft.DataCell(ft.Text("Nome do Jogador")),
-                            ft.DataCell(ft.Text("Posição")),
-                            ft.DataCell(ft.Text("País")),
+                            ft.DataCell(ft.Text("Posicao")),
+                            ft.DataCell(ft.Text("Pais")),
                         ]
                     ),
                 ],
