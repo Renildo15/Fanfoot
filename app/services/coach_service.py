@@ -28,7 +28,7 @@ def list_coachs() -> List[Coach]:
         return coachs
 
 
-def get_coach(coach_id: int):
+def get_coach(coach_id: int) -> Coach:
     with get_session() as s:
         return s.get(Coach, coach_id)
 

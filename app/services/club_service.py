@@ -4,7 +4,8 @@ from sqlmodel import SQLModel, col, func, or_, select
 
 from app.db.db import get_session
 from app.db.models import Club, ClubFederation
-
+from sqlmodel import select
+from sqlalchemy.orm import selectinload
 
 class ClubCreate(SQLModel):
     name: str
@@ -31,7 +32,14 @@ def create_club(data: ClubCreate) -> Club:
 
 def get_club(club_id: int) -> Club:
     with get_session() as s:
-        return s.get(Club, club_id)
+        statement = (
+            select(Club)
+            .where(Club.id == club_id)
+            .options(selectinload(Club.coach))
+        )
+
+        result = s.exec(statement).first()
+        return result
 
 
 def list_clubs(

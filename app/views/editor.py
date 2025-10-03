@@ -46,7 +46,6 @@ def view(page: ft.Page) -> ft.Control:
         nonlocal club
         try:
             club = get_club(club_id)
-            print(f"Clube carregado: {club.name}")
         except Exception as ex:
             print(f"Erro ao obter clube: {ex}")
             club = None

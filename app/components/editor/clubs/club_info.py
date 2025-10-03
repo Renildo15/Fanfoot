@@ -1,5 +1,7 @@
 import flet as ft
 from app.db.models import Club
+from app.services.country_service import get_country
+from app.services.coach_service import get_coach
 
 def club_info(club: Club):
     if club is None:
@@ -16,6 +18,16 @@ def club_info(club: Club):
                 )
             ]
         )
+    
+    country = get_country(club.country_id)
+    flag = ft.Image(
+        src=country.flag if country.flag else "/assets/placeholder_club.png",
+        width=192,
+        height=128,
+        fit=ft.ImageFit.CONTAIN,
+        border_radius=8,
+    )
+    coach_text = ft.Text(f"Técnico: {club.coach.full_name}", size=14) if club.coach else ft.Text("Técnico: Não definido", size=14)
     
     return ft.Column(
         [
@@ -59,7 +71,7 @@ def club_info(club: Club):
                                             ft.Container(
                                                 width=20,
                                                 height=20,
-                                                bgcolor=ft.Colors.BLUE,  # Você pode adicionar cores ao modelo Club
+                                                bgcolor=club.primary_color,  # Você pode adicionar cores ao modelo Club
                                                 border_radius=4,
                                             ),
                                         ]
@@ -74,7 +86,7 @@ def club_info(club: Club):
                                             ft.Container(
                                                 width=20,
                                                 height=20,
-                                                bgcolor=ft.Colors.RED,  # Você pode adicionar cores ao modelo Club
+                                                bgcolor=club.secondary_color,  # Você pode adicionar cores ao modelo Club
                                                 border_radius=4,
                                             ),
                                         ]
@@ -86,12 +98,7 @@ def club_info(club: Club):
                     ft.Row(
                         [
                             ft.Container(
-                                content=ft.Image(
-                                    src="/assets/placeholder_country.png",
-                                    width=192,
-                                    height=128,
-                                    fit=ft.ImageFit.CONTAIN,
-                                ),
+                                content= flag,
                                 border=ft.border.all(1, ft.Colors.GREY_300),
                                 border_radius=8,
                                 clip_behavior=ft.ClipBehavior.HARD_EDGE,
@@ -118,7 +125,7 @@ def club_info(club: Club):
             ft.Row(
                 [
                     ft.Text(f"Estadio: {club.stadium if club.stadium else 'Não definido'}", size=14),
-                    # ft.Text(f"Tecnico: {club.coach if club.coach else 'Não definido'}", size=14),
+                    coach_text
                 ]
             ),
             ft.Divider(opacity=0.2),
