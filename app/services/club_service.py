@@ -36,6 +36,7 @@ def get_club(club_id: int) -> Club:
             select(Club)
             .where(Club.id == club_id)
             .options(selectinload(Club.coach))
+            .options(selectinload(Club.players))
         )
 
         result = s.exec(statement).first()

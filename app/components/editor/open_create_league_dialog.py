@@ -27,8 +27,8 @@ def open_create_league_dialog(page: ft.Page):
 
     country = ft.Dropdown(
         label="País",
-        width=300,
-        options=countries_options,
+        width=170,
+        options=countries_options(all_countries),
     )
     type_dd = ft.Dropdown(
         label="Tipo",

@@ -18,7 +18,43 @@ def club_info(club: Club):
                 )
             ]
         )
-    
+    table = None
+    if len(club.players) == 0:
+        table = ft.Column(
+            [
+                ft.Container(
+                    content=ft.Text(
+                        "Nenhum jogador registrado",
+                        size=16,
+                        color=ft.Colors.GREY_500,
+                    ),
+                    padding=20,
+                    alignment=ft.alignment.center,
+                )
+            ]
+        )
+    else:
+        table = ft.DataTable(
+                columns=[
+                    ft.DataColumn(ft.Text("Jogador")),
+                    ft.DataColumn(ft.Text("Posicao")),
+                    ft.DataColumn(ft.Text("Pais")),
+                ],
+                rows=[
+                    ft.DataRow(
+                        cells=[
+                            ft.DataCell(ft.Text("Nome do Jogador")),
+                            ft.DataCell(ft.Text("Posicao")),
+                            ft.DataCell(ft.Text("Pais")),
+                        ]
+                    ),
+                ],
+                border=ft.border.all(1, ft.Colors.GREY_300),
+                border_radius=8,
+                vertical_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
+                horizontal_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
+            )
+
     country = get_country(club.country_id)
     flag = ft.Image(
         src=country.flag if country.flag else "/assets/placeholder_club.png",
@@ -129,25 +165,30 @@ def club_info(club: Club):
                 ]
             ),
             ft.Divider(opacity=0.2),
-            ft.DataTable(
-                columns=[
-                    ft.DataColumn(ft.Text("Jogador")),
-                    ft.DataColumn(ft.Text("Posicao")),
-                    ft.DataColumn(ft.Text("Pais")),
-                ],
-                rows=[
-                    ft.DataRow(
-                        cells=[
-                            ft.DataCell(ft.Text("Nome do Jogador")),
-                            ft.DataCell(ft.Text("Posicao")),
-                            ft.DataCell(ft.Text("Pais")),
-                        ]
+            table,
+            ft.Divider(opacity=0.2),
+            ft.Row(
+                [
+                    ft.FilledButton(
+                        "Adicionar",
+                        icon=ft.Icons.ADD,
+                        on_click=lambda e: print(""),
                     ),
-                ],
-                border=ft.border.all(1, ft.Colors.GREY_300),
-                border_radius=8,
-                vertical_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
-                horizontal_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
-            ),
+                    ft.FilledButton(
+                        "Importar csv", icon=ft.Icons.FILE_UPLOAD, on_click=lambda e: print("")
+                    ),
+                    ft.FilledButton(
+                        "Editar",
+                        icon=ft.Icons.EDIT,
+                        on_click=lambda e: print(""),
+                    ),
+                    ft.FilledButton(
+                        "Remover", icon=ft.Icons.DELETE, on_click=lambda e: print("")
+                    ),
+                    ft.FilledButton(
+                        "Transferencia", icon=ft.Icons.CHANGE_CIRCLE, on_click=lambda e: print("")
+                    ),
+                ]
+            )
         ],
     )

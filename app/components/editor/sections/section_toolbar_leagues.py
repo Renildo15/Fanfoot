@@ -1,7 +1,6 @@
 import flet as ft
 
-from app.components.editor.open_create_league_dialog import \
-    open_create_league_dialog
+from app.components.editor.open_create_league_dialog import open_create_league_dialog
 from app.components.editor.open_csv_modal import open_csv_modal
 from app.services.file_service import FileService
 
@@ -57,7 +56,7 @@ def section_toolbar_leagues(page: ft.Page, refresh_callback=None):
     return ft.Row(
         [
             ft.FilledButton(
-                "Nova Liga",
+                "Nova competição",
                 icon=ft.Icons.ADD,
                 on_click=lambda e: page.open(open_create_league_dialog(page)),
             ),
