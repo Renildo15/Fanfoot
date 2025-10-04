@@ -1,7 +1,6 @@
 import flet as ft
 from app.db.models import Club
 from app.services.country_service import get_country
-from app.services.coach_service import get_coach
 
 def club_info(club: Club):
     if club is None:
