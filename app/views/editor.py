@@ -52,7 +52,7 @@ def view(page: ft.Page) -> ft.Control:
         
         # Atualiza o club_info na coluna direita
         if right_column_ref.current:
-            right_column_ref.current.controls = [club_info(club)]
+            right_column_ref.current.controls = [club_info(page, club)]
             page.update()
 
     def build_section_content(name: str) -> ft.Control:
@@ -70,7 +70,7 @@ def view(page: ft.Page) -> ft.Control:
         if name == "Clubes":
             # Coluna direita com club_info
             right_col = ft.Column(
-                [club_info(club)],
+                [club_info(page, club)],
                 spacing=12,
                 expand=2,
                 scroll=ft.ScrollMode.AUTO,

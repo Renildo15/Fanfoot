@@ -148,18 +148,18 @@ class Player(SQLModel, table=True):
     position: Position = Field(sa_column_kwargs={"nullable": False})
     secondary_position: Optional[Position] = Field(sa_column_kwargs={"nullable": True})
     preferred_foot: PlayerPreferredFoot = Field(sa_column_kwargs={"nullable": False})
-    height_cm: int = 170
-    weight_kg: int = 70
-    overall: int = 50
-    potential: int = 50
-    morale: int = 40
+    height_cm: int = 170 #gerar de forma aleatoria
+    weight_kg: int = 70 #gerar de forma aleatoria
+    overall: int = 50 #gerar de forma aleatoria e manual
+    potential: int = 50 #gerar de forma aleatoria somente para jovens
+    morale: int = 40 #gerar de forma aleatoria
     fitness: int = 100
     status: PlayerStatus = Field(
         default=PlayerStatus.ACTIVE, sa_column_kwargs={"nullable": False}
     )
     shirt_number: int = 0
-    salary_weekly: float = 0.0
-    contract_until: str = "2030-06-30"
+    salary_weekly: float = 0.0 #gerar de forma aleatoria
+    contract_until: str = "2030-06-30" #gerar de forma aleatoria
 
     current_club_id: Optional[int] = Field(default=None, foreign_key="club.id")
     club: Optional[Club] = Relationship(back_populates="players")

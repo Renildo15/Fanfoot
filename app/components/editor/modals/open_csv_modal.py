@@ -2,8 +2,8 @@ from typing import List
 
 import flet as ft
 
-from app.components.editor.content_csv_modal.club_content import club_content
-from app.components.editor.content_csv_modal.competition_content import \
+from app.components.editor.modals.content_csv_modal.club_content import club_content
+from app.components.editor.modals.content_csv_modal.competition_content import \
     competition_content
 from app.db.models import Club, Competition
 from app.utils.data_imports import ImportData

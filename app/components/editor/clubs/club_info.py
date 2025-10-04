@@ -1,8 +1,9 @@
 import flet as ft
 from app.db.models import Club
 from app.services.country_service import get_country
+from app.components.editor.modals.open_create_player import open_create_player
 
-def club_info(club: Club):
+def club_info(page:ft.Page, club: Club):
     if club is None:
         return ft.Column(
             [
@@ -171,7 +172,9 @@ def club_info(club: Club):
                     ft.FilledButton(
                         "Adicionar",
                         icon=ft.Icons.ADD,
-                        on_click=lambda e: print(""),
+                        on_click=lambda e: page.open(
+                            open_create_player(page)
+                        ),
                     ),
                     ft.FilledButton(
                         "Importar csv", icon=ft.Icons.FILE_UPLOAD, on_click=lambda e: print("")
