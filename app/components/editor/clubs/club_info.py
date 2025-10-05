@@ -173,7 +173,7 @@ def club_info(page:ft.Page, club: Club):
                         "Adicionar",
                         icon=ft.Icons.ADD,
                         on_click=lambda e: page.open(
-                            open_create_player(page)
+                            open_create_player(page, club)
                         ),
                     ),
                     ft.FilledButton(

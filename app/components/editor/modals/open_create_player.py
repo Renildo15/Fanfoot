@@ -1,18 +1,22 @@
 import flet as ft
+import flet.canvas as cv
 from app.db.models import Position, PlayerPreferredFoot
 from app.services.country_service import get_countries, get_country
 from app.components.editor.countries_options import countries_options
+from app.db.models import Club
 
-def open_create_player(page: ft.Page):
+def open_create_player(page: ft.Page, club: Club):
+
     all_countries = get_countries()
 
     full_name = ft.TextField(label="Nome", autofocus=True, width=360)
-    surname = ft.TextField(label="Apelido", width=360)
+    surname = ft.TextField(label="Apelido", width=360, max_length=11, value="Jogador")
     age = ft.TextField(
         label="Idade",
         width=360,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="16",
+        max_length=2
     )
     position = ft.Dropdown(
         label="Posição",
@@ -33,19 +37,21 @@ def open_create_player(page: ft.Page):
         options=[ft.dropdown.Option(t.value) for t in PlayerPreferredFoot],
         value=PlayerPreferredFoot.B.value,
     )
-   
+
     overall = ft.TextField(
         label="Geral",
         width=360,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="50",
+        max_length=2
     )
-   
+
     shirt_number = ft.TextField(
         label="Número da camisa",
         width=170,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="1",
+        max_length=2
     )
 
     country = ft.Dropdown(
@@ -54,10 +60,145 @@ def open_create_player(page: ft.Page):
         options=countries_options(all_countries),
     )
 
+   
+
+    # Criar uma variável para armazenar o texto atual
+    current_shirt_number = ft.Ref[ft.Text]()
+    current_name = ft.Ref[ft.Text]()
+
+    # Canvas com Stack (abordagem mais simples)
+    circle_with_text = ft.Stack(
+        [
+            cv.Canvas(
+                [
+                    cv.Rect(
+                        x=50.5,
+                        y=29.5,
+                        height=141,
+                        width=99,
+                        paint=ft.Paint(
+                            stroke_width=2,
+                            style=ft.PaintingStyle.FILL,
+                            color=club.primary_color,
+                        ),
+                    ),
+                    cv.Rect(
+                        x=82,
+                        y=22,
+                        width=36,
+                        height=8,
+                        paint=ft.Paint(
+                            style=ft.PaintingStyle.FILL,
+                            color=club.secondary_color
+                        ),
+                    ),
+                    cv.Path(
+                        [
+                            # ponto superior esquerdo da manga (ligado à camisa)
+                            cv.Path.MoveTo(50.5 - 50, 40),  
+                            # ponto superior direito da manga (fim da largura da manga)
+                            cv.Path.LineTo(50.5, 30),  
+                            # ponto inferior direito da manga (fim da altura da manga)
+                            cv.Path.LineTo(50.5, 70),  
+                            # ponto inferior esquerdo da manga (começo da altura da manga)
+                            cv.Path.LineTo(50.5 - 50, 80),  
+                            # fecha o caminho
+                            cv.Path.Close(),
+                        ],
+                        paint=ft.Paint(
+                            stroke_width=2,
+                            style=ft.PaintingStyle.FILL,
+                            color=club.secondary_color
+                        ),
+                    ),
+                    cv.Path(
+                        [
+                            # ponto superior esquerdo da manga direita (ligado à camisa)
+                            cv.Path.MoveTo(148.5 + 50, 40),  
+                            # ponto superior direito da manga direita
+                            cv.Path.LineTo(149, 30),  
+                            # ponto inferior direito da manga direita
+                            cv.Path.LineTo(149, 70),  
+                            # ponto inferior esquerdo da manga direita
+                            cv.Path.LineTo(148.5 + 50, 80),  
+                            # fecha o caminho
+                            cv.Path.Close(),
+                        ],
+                        paint=ft.Paint(
+                            stroke_width=2,
+                            style=ft.PaintingStyle.FILL,
+                            color=club.secondary_color
+                        ),
+                    )
+                ],
+                width=200,
+                height=200,
+            ),
+           ft.Container(
+                content=ft.Text(
+                    ref=current_name,
+                    value=(surname.value or "").upper(),
+                    size=14,
+                    weight=ft.FontWeight.W_600,
+                    color=ft.Colors.WHITE,
+                    font_family="Thailandesa"
+                ),
+                width=200,
+                height=40,
+                alignment=ft.Alignment(0, -5)
+                
+            ),
+
+            ft.Container(
+                content=ft.Text(
+                    ref=current_shirt_number,
+                    value=shirt_number.value,
+                    size=64,
+                    weight=ft.FontWeight.W_700,
+                    color=ft.Colors.WHITE,
+                    font_family="Thailandesa"
+                ),
+                width=200,
+                height=120,
+               alignment=ft.Alignment(0, 0)
+            ),
+        ],
+        width=400,
+        height=200,
+        alignment=ft.alignment.center
+    )
+
+    def update_shirtnumber(e=None):
+        # Atualizar o texto com o valor atual do shirt_number
+        if current_shirt_number.current:
+            current_shirt_number.current.value = shirt_number.value
+            current_shirt_number.current.update()
+
+    def update_surname(e=None):
+        if current_name.current:
+            current_name.current.value = surname.value
+            current_name.current.update()
+    
+
+    # Configurar o evento on_change
+    shirt_number.on_change = update_shirtnumber
+    surname.on_change = update_surname
+   
 
     form = ft.Column(
         [
-            # bloco: identificação (nome + apelido + idade)
+            ft.Row(
+                [
+                    ft.Container(
+                        circle_with_text,
+                        alignment=ft.alignment.center,
+                        bgcolor=ft.Colors.GREY_100,
+                        border_radius=10,
+                        padding=20,
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
             ft.Row(
                 [
                     ft.Column(
