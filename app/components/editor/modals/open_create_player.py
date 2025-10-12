@@ -4,6 +4,7 @@ import flet.canvas as cv
 from app.components.editor.countries_options import countries_options
 from app.db.models import Club, PlayerPreferredFoot, PlayerStatus, Position
 from app.services.country_service import get_countries, get_country
+from app.services.player_service import create_player
 from app.services.player_engine_stats_service import PlayerEngineStatsService
 
 
@@ -11,11 +12,11 @@ def open_create_player(page: ft.Page, club: Club):
 
     all_countries = get_countries()
     player_engine = PlayerEngineStatsService()
-    full_name = ft.TextField(label="Nome", autofocus=True, width=360)
-    surname = ft.TextField(label="Apelido", width=360, max_length=11, value="Jogador")
+    full_name = ft.TextField(label="Nome", autofocus=True, width=170)
+    surname = ft.TextField(label="Apelido", width=170, max_length=11, value="Jogador")
     age = ft.TextField(
         label="Idade",
-        width=360,
+        width=170,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="16",
         max_length=2,
@@ -30,7 +31,7 @@ def open_create_player(page: ft.Page, club: Club):
         label="Segunda posição",
         width=170,
         options=[ft.dropdown.Option(t.value) for t in Position],
-        value="Sem segunda posição",
+        value=None,
     )
 
     preferred_foot = ft.Dropdown(
@@ -153,7 +154,7 @@ def open_create_player(page: ft.Page, club: Club):
                     size=64,
                     weight=ft.FontWeight.W_700,
                     color=ft.Colors.WHITE,
-                    font_family="Thailandesa",
+                    font_family="Kelly Slab",
                 ),
                 width=200,
                 height=120,
@@ -188,6 +189,11 @@ def open_create_player(page: ft.Page, club: Club):
             page.update()
             return
 
+        if not country.value:
+            error_text.value = "Adicione o país do jogador."
+            page.update()
+            return
+
         if int(age.value) < 16 or int(age.value) > 40:
             error_text.value = "Idade inválida."
             page.update()
@@ -206,7 +212,7 @@ def open_create_player(page: ft.Page, club: Club):
             page.update()
             return
 
-        if secondary_position.value in "Sem":
+        if not secondary_position.value:
             secondary_position.value = None
 
         height, weight = player_engine.get_height_and_weight(position.value)
@@ -240,6 +246,7 @@ def open_create_player(page: ft.Page, club: Club):
                 "contract_until": months,
                 "current_club_id": club.id,
             }
+            create_player(payload)
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
             print(ex)
@@ -264,15 +271,7 @@ def open_create_player(page: ft.Page, club: Club):
                 [
                     ft.Column(
                         [
-                            ft.Text("Identificação", weight=ft.FontWeight.W_600),
-                            full_name,
-                        ],
-                        expand=True,
-                    ),
-                    ft.Column(
-                        [
-                            ft.Text("Dados rápidos", weight=ft.FontWeight.W_600),
-                            ft.Row([surname, age], spacing=12),
+                            ft.Row([full_name, surname, age], spacing=12),
                         ],
                         width=360,
                     ),
@@ -285,16 +284,17 @@ def open_create_player(page: ft.Page, club: Club):
                 [
                     ft.Column(
                         [
-                            ft.Text(
-                                "Nacionalidade & Clube", weight=ft.FontWeight.W_600
-                            ),
                             ft.Row([country, shirt_number], spacing=12),
                         ],
                         expand=True,
                     ),
+                ],
+                spacing=20,
+            ),
+             ft.Row(
+                [
                     ft.Column(
                         [
-                            ft.Text("Posições", weight=ft.FontWeight.W_600),
                             ft.Row(
                                 [position, secondary_position, preferred_foot],
                                 spacing=12,
@@ -310,7 +310,6 @@ def open_create_player(page: ft.Page, club: Club):
                 [
                     ft.Column(
                         [
-                            ft.Text("Atributos", weight=ft.FontWeight.W_600),
                             ft.Row([overall], spacing=12),
                         ],
                         expand=True,
