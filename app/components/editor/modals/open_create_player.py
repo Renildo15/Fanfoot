@@ -28,7 +28,7 @@ def open_create_player(page: ft.Page, club: Club):
         label="Segunda posição",
         width=170,
         options=[ft.dropdown.Option(t.value) for t in Position],
-        value=Position.GK.value,
+        value="Sem segunda posição",
     )
 
     preferred_foot = ft.Dropdown(
@@ -183,7 +183,58 @@ def open_create_player(page: ft.Page, club: Club):
     # Configurar o evento on_change
     shirt_number.on_change = update_shirtnumber
     surname.on_change = update_surname
-   
+
+    error_text = ft.Text("", color=ft.Colors.RED_300, size=12)
+
+    def submit(e):
+        if not full_name.value:
+            error_text.value = "Adicione o nome do jogador."
+            page.update()
+            return
+        
+        if int(age.value) < 16 or int(age.value) > 40:
+            error_text.value = "Idade inválida."
+            page.update()
+            return
+        
+        if int(overall.value) < 50 or int(overall.value) > 99:
+            error_text.value = "Overall inválido."
+            page.update()
+            return
+        
+        if secondary_position.value in "Sem":
+            secondary_position.value = None
+
+        try:
+            country_obj = None
+            if country.value:
+                country_obj = get_country(country.value)
+
+            payload = {
+                "full_name": full_name.value,
+                "surname": surname.value,
+                "age": age.value,
+                "position": position.value,
+                "secondary_position": secondary_position.value,
+                "preferred_foot": preferred_foot.value,
+                "overall": int(overall.value),
+                "shirt_number": int(shirt_number.value),
+                "country": country_obj,
+                "height_cm": 000,
+                "weight_kg": 000,
+                "morale": 000,
+                "fitness": 000,
+                "status": "status",
+                "potential": 00,
+                "salary_weekly": 0000,
+                "contract_until": 00000,
+                "current_club_id": 1
+            }
+        except Exception as ex:
+            error_text.value = f"Valores inválidos: {ex}"
+            print(ex)
+            page.update()
+            return
 
     form = ft.Column(
         [
@@ -259,7 +310,7 @@ def open_create_player(page: ft.Page, club: Club):
         title=ft.Text("Novo jogador"),
         content=form,
         actions=[
-            ft.TextButton("Salvar", on_click=lambda e: print("opa")),
+            ft.TextButton("Salvar", on_click=lambda e: submit(e)),
             ft.TextButton("Cancelar", on_click=lambda e: page.close(modal)),
         ],
         actions_alignment=ft.MainAxisAlignment.END,
