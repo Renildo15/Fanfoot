@@ -1,10 +1,11 @@
 import flet as ft
 import flet.canvas as cv
-from app.db.models import Position, PlayerPreferredFoot
-from app.services.country_service import get_countries, get_country
+
 from app.components.editor.countries_options import countries_options
+from app.db.models import Club, PlayerPreferredFoot, PlayerStatus, Position
+from app.services.country_service import get_countries, get_country
 from app.services.player_engine_stats_service import PlayerEngineStatsService
-from app.db.models import Club, PlayerStatus
+
 
 def open_create_player(page: ft.Page, club: Club):
 
@@ -17,7 +18,7 @@ def open_create_player(page: ft.Page, club: Club):
         width=360,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="16",
-        max_length=2
+        max_length=2,
     )
     position = ft.Dropdown(
         label="Posição",
@@ -44,7 +45,7 @@ def open_create_player(page: ft.Page, club: Club):
         width=360,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="50",
-        max_length=2
+        max_length=2,
     )
 
     shirt_number = ft.TextField(
@@ -52,7 +53,7 @@ def open_create_player(page: ft.Page, club: Club):
         width=170,
         keyboard_type=ft.KeyboardType.NUMBER,
         value="1",
-        max_length=2
+        max_length=2,
     )
 
     country = ft.Dropdown(
@@ -60,8 +61,6 @@ def open_create_player(page: ft.Page, club: Club):
         width=170,
         options=countries_options(all_countries),
     )
-
-   
 
     # Criar uma variável para armazenar o texto atual
     current_shirt_number = ft.Ref[ft.Text]()
@@ -89,67 +88,64 @@ def open_create_player(page: ft.Page, club: Club):
                         width=36,
                         height=8,
                         paint=ft.Paint(
-                            style=ft.PaintingStyle.FILL,
-                            color=club.secondary_color
+                            style=ft.PaintingStyle.FILL, color=club.secondary_color
                         ),
                     ),
                     cv.Path(
                         [
                             # ponto superior esquerdo da manga (ligado à camisa)
-                            cv.Path.MoveTo(50.5 - 50, 40),  
+                            cv.Path.MoveTo(50.5 - 50, 40),
                             # ponto superior direito da manga (fim da largura da manga)
-                            cv.Path.LineTo(50.5, 30),  
+                            cv.Path.LineTo(50.5, 30),
                             # ponto inferior direito da manga (fim da altura da manga)
-                            cv.Path.LineTo(50.5, 70),  
+                            cv.Path.LineTo(50.5, 70),
                             # ponto inferior esquerdo da manga (começo da altura da manga)
-                            cv.Path.LineTo(50.5 - 50, 80),  
+                            cv.Path.LineTo(50.5 - 50, 80),
                             # fecha o caminho
                             cv.Path.Close(),
                         ],
                         paint=ft.Paint(
                             stroke_width=2,
                             style=ft.PaintingStyle.FILL,
-                            color=club.secondary_color
+                            color=club.secondary_color,
                         ),
                     ),
                     cv.Path(
                         [
                             # ponto superior esquerdo da manga direita (ligado à camisa)
-                            cv.Path.MoveTo(148.5 + 50, 40),  
+                            cv.Path.MoveTo(148.5 + 50, 40),
                             # ponto superior direito da manga direita
-                            cv.Path.LineTo(149, 30),  
+                            cv.Path.LineTo(149, 30),
                             # ponto inferior direito da manga direita
-                            cv.Path.LineTo(149, 70),  
+                            cv.Path.LineTo(149, 70),
                             # ponto inferior esquerdo da manga direita
-                            cv.Path.LineTo(148.5 + 50, 80),  
+                            cv.Path.LineTo(148.5 + 50, 80),
                             # fecha o caminho
                             cv.Path.Close(),
                         ],
                         paint=ft.Paint(
                             stroke_width=2,
                             style=ft.PaintingStyle.FILL,
-                            color=club.secondary_color
+                            color=club.secondary_color,
                         ),
-                    )
+                    ),
                 ],
                 width=200,
                 height=200,
             ),
-           ft.Container(
+            ft.Container(
                 content=ft.Text(
                     ref=current_name,
                     value=(surname.value or "").upper(),
                     size=14,
                     weight=ft.FontWeight.W_600,
                     color=ft.Colors.WHITE,
-                    font_family="Thailandesa"
+                    font_family="Thailandesa",
                 ),
                 width=200,
                 height=40,
-                alignment=ft.Alignment(0, -5)
-                
+                alignment=ft.Alignment(0, -5),
             ),
-
             ft.Container(
                 content=ft.Text(
                     ref=current_shirt_number,
@@ -157,16 +153,16 @@ def open_create_player(page: ft.Page, club: Club):
                     size=64,
                     weight=ft.FontWeight.W_700,
                     color=ft.Colors.WHITE,
-                    font_family="Thailandesa"
+                    font_family="Thailandesa",
                 ),
                 width=200,
                 height=120,
-               alignment=ft.Alignment(0, 0)
+                alignment=ft.Alignment(0, 0),
             ),
         ],
         width=400,
         height=200,
-        alignment=ft.alignment.center
+        alignment=ft.alignment.center,
     )
 
     def update_shirtnumber(e=None):
@@ -179,7 +175,6 @@ def open_create_player(page: ft.Page, club: Club):
         if current_name.current:
             current_name.current.value = surname.value
             current_name.current.update()
-    
 
     # Configurar o evento on_change
     shirt_number.on_change = update_shirtnumber
@@ -192,7 +187,7 @@ def open_create_player(page: ft.Page, club: Club):
             error_text.value = "Adicione o nome do jogador."
             page.update()
             return
-        
+
         if int(age.value) < 16 or int(age.value) > 40:
             error_text.value = "Idade inválida."
             page.update()
@@ -202,17 +197,19 @@ def open_create_player(page: ft.Page, club: Club):
             error_text.value = "Adicione um número válido"
             page.update()
             return
-        
+
         if int(overall.value) < 50 or int(overall.value) > 99:
             error_text.value = "Overall inválido."
             page.update()
             return
-        
+
         if secondary_position.value in "Sem":
             secondary_position.value = None
 
         height, weight = player_engine.get_height_and_weight(position.value)
-        potential = player_engine.calculate_potential(int(overall.value), int(age.value), position.value)
+        potential = player_engine.calculate_potential(
+            int(overall.value), int(age.value), position.value
+        )
 
         try:
             country_obj = None
@@ -237,7 +234,7 @@ def open_create_player(page: ft.Page, club: Club):
                 "potential": potential,
                 "salary_weekly": 0000,
                 "contract_until": 00000,
-                "current_club_id": club.id
+                "current_club_id": club.id,
             }
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
@@ -262,24 +259,31 @@ def open_create_player(page: ft.Page, club: Club):
             ft.Row(
                 [
                     ft.Column(
-                        [ft.Text("Identificação", weight=ft.FontWeight.W_600), full_name],
+                        [
+                            ft.Text("Identificação", weight=ft.FontWeight.W_600),
+                            full_name,
+                        ],
                         expand=True,
                     ),
                     ft.Column(
-                        [ft.Text("Dados rápidos", weight=ft.FontWeight.W_600), ft.Row([surname, age], spacing=12)],
+                        [
+                            ft.Text("Dados rápidos", weight=ft.FontWeight.W_600),
+                            ft.Row([surname, age], spacing=12),
+                        ],
                         width=360,
                     ),
                 ],
                 spacing=20,
                 alignment=ft.MainAxisAlignment.START,
             ),
-
             # bloco: nacionalidade e posições
             ft.Row(
                 [
                     ft.Column(
                         [
-                            ft.Text("Nacionalidade & Clube", weight=ft.FontWeight.W_600),
+                            ft.Text(
+                                "Nacionalidade & Clube", weight=ft.FontWeight.W_600
+                            ),
                             ft.Row([country, shirt_number], spacing=12),
                         ],
                         expand=True,
@@ -287,27 +291,30 @@ def open_create_player(page: ft.Page, club: Club):
                     ft.Column(
                         [
                             ft.Text("Posições", weight=ft.FontWeight.W_600),
-                            ft.Row([position, secondary_position, preferred_foot], spacing=12),
+                            ft.Row(
+                                [position, secondary_position, preferred_foot],
+                                spacing=12,
+                            ),
                         ],
                         width=540,
                     ),
                 ],
                 spacing=20,
             ),
-
             # bloco: atributos físicos e técnicos
             ft.Row(
                 [
                     ft.Column(
-                        [ft.Text("Atributos", weight=ft.FontWeight.W_600), ft.Row([overall], spacing=12)],
+                        [
+                            ft.Text("Atributos", weight=ft.FontWeight.W_600),
+                            ft.Row([overall], spacing=12),
+                        ],
                         expand=True,
                     ),
                 ],
                 spacing=20,
             ),
-
             ft.Divider(opacity=0.2),
-
         ],
         spacing=16,
         width=820,

@@ -1,9 +1,11 @@
 import flet as ft
+
+from app.components.editor.modals.open_create_player import open_create_player
 from app.db.models import Club
 from app.services.country_service import get_country
-from app.components.editor.modals.open_create_player import open_create_player
 
-def club_info(page:ft.Page, club: Club):
+
+def club_info(page: ft.Page, club: Club):
     if club is None:
         return ft.Column(
             [
@@ -35,25 +37,25 @@ def club_info(page:ft.Page, club: Club):
         )
     else:
         table = ft.DataTable(
-                columns=[
-                    ft.DataColumn(ft.Text("Jogador")),
-                    ft.DataColumn(ft.Text("Posicao")),
-                    ft.DataColumn(ft.Text("Pais")),
-                ],
-                rows=[
-                    ft.DataRow(
-                        cells=[
-                            ft.DataCell(ft.Text("Nome do Jogador")),
-                            ft.DataCell(ft.Text("Posicao")),
-                            ft.DataCell(ft.Text("Pais")),
-                        ]
-                    ),
-                ],
-                border=ft.border.all(1, ft.Colors.GREY_300),
-                border_radius=8,
-                vertical_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
-                horizontal_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
-            )
+            columns=[
+                ft.DataColumn(ft.Text("Jogador")),
+                ft.DataColumn(ft.Text("Posicao")),
+                ft.DataColumn(ft.Text("Pais")),
+            ],
+            rows=[
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text("Nome do Jogador")),
+                        ft.DataCell(ft.Text("Posicao")),
+                        ft.DataCell(ft.Text("Pais")),
+                    ]
+                ),
+            ],
+            border=ft.border.all(1, ft.Colors.GREY_300),
+            border_radius=8,
+            vertical_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
+            horizontal_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
+        )
 
     country = get_country(club.country_id)
     flag = ft.Image(
@@ -63,15 +65,23 @@ def club_info(page:ft.Page, club: Club):
         fit=ft.ImageFit.CONTAIN,
         border_radius=8,
     )
-    coach_text = ft.Text(f"Técnico: {club.coach.full_name}", size=14) if club.coach else ft.Text("Técnico: Não definido", size=14)
-    
+    coach_text = (
+        ft.Text(f"Técnico: {club.coach.full_name}", size=14)
+        if club.coach
+        else ft.Text("Técnico: Não definido", size=14)
+    )
+
     return ft.Column(
         [
             ft.Row(
                 [
                     ft.Container(
                         content=ft.Image(
-                            src=club.crest_path if club.crest_path else "/assets/placeholder_club.png",
+                            src=(
+                                club.crest_path
+                                if club.crest_path
+                                else "/assets/placeholder_club.png"
+                            ),
                             width=64,
                             height=64,
                             fit=ft.ImageFit.CONTAIN,
@@ -94,7 +104,9 @@ def club_info(page:ft.Page, club: Club):
                     ),
                     ft.Column(
                         [
-                            ft.Text(f"Reputacao: {club.reputation}", size=20, weight="bold"),
+                            ft.Text(
+                                f"Reputacao: {club.reputation}", size=20, weight="bold"
+                            ),
                             ft.Row(
                                 [
                                     ft.Row(
@@ -134,7 +146,7 @@ def club_info(page:ft.Page, club: Club):
                     ft.Row(
                         [
                             ft.Container(
-                                content= flag,
+                                content=flag,
                                 border=ft.border.all(1, ft.Colors.GREY_300),
                                 border_radius=8,
                                 clip_behavior=ft.ClipBehavior.HARD_EDGE,
@@ -144,12 +156,16 @@ def club_info(page:ft.Page, club: Club):
                                     ft.IconButton(
                                         icon=ft.Icons.EDIT_OUTLINED,
                                         tooltip="Editar Clube",
-                                        on_click=lambda e: print(f"Editar Clube: {club.name}"),
+                                        on_click=lambda e: print(
+                                            f"Editar Clube: {club.name}"
+                                        ),
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.DELETE_OUTLINED,
                                         tooltip="Excluir Clube",
-                                        on_click=lambda e: print(f"Excluir Clube: {club.name}"),
+                                        on_click=lambda e: print(
+                                            f"Excluir Clube: {club.name}"
+                                        ),
                                     ),
                                 ]
                             ),
@@ -160,8 +176,11 @@ def club_info(page:ft.Page, club: Club):
             ),
             ft.Row(
                 [
-                    ft.Text(f"Estadio: {club.stadium if club.stadium else 'Não definido'}", size=14),
-                    coach_text
+                    ft.Text(
+                        f"Estadio: {club.stadium if club.stadium else 'Não definido'}",
+                        size=14,
+                    ),
+                    coach_text,
                 ]
             ),
             ft.Divider(opacity=0.2),
@@ -172,12 +191,12 @@ def club_info(page:ft.Page, club: Club):
                     ft.FilledButton(
                         "Adicionar",
                         icon=ft.Icons.ADD,
-                        on_click=lambda e: page.open(
-                            open_create_player(page, club)
-                        ),
+                        on_click=lambda e: page.open(open_create_player(page, club)),
                     ),
                     ft.FilledButton(
-                        "Importar csv", icon=ft.Icons.FILE_UPLOAD, on_click=lambda e: print("")
+                        "Importar csv",
+                        icon=ft.Icons.FILE_UPLOAD,
+                        on_click=lambda e: print(""),
                     ),
                     ft.FilledButton(
                         "Editar",
@@ -188,9 +207,11 @@ def club_info(page:ft.Page, club: Club):
                         "Remover", icon=ft.Icons.DELETE, on_click=lambda e: print("")
                     ),
                     ft.FilledButton(
-                        "Transferencia", icon=ft.Icons.CHANGE_CIRCLE, on_click=lambda e: print("")
+                        "Transferencia",
+                        icon=ft.Icons.CHANGE_CIRCLE,
+                        on_click=lambda e: print(""),
                     ),
                 ]
-            )
+            ),
         ],
     )

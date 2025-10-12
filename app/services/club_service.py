@@ -1,11 +1,11 @@
 from typing import List, Optional, Tuple
 
+from sqlalchemy.orm import selectinload
 from sqlmodel import SQLModel, col, func, or_, select
 
 from app.db.db import get_session
 from app.db.models import Club, ClubFederation
-from sqlmodel import select
-from sqlalchemy.orm import selectinload
+
 
 class ClubCreate(SQLModel):
     name: str

@@ -1,8 +1,8 @@
-
 import random
 from typing import Dict, Tuple
 
 from app.db.models import Position
+
 
 class PlayerEngineStatsService:
     PROFILES: Dict[str, Tuple[int, int]] = {
@@ -64,7 +64,7 @@ class PlayerEngineStatsService:
         pos = position.upper()
         low, high = self.PROFILES.get(pos, self.PROFILES["DEFAULT"])
         return random.choice(range(low, high + 1))
-    
+
     def _generate_weight(self, height_cm: int, position: Position) -> float:
         height_m = height_cm / 100
         low, high = self.IMC_RANGES.get(position.upper(), self.IMC_RANGES["DEFAULT"])
@@ -72,14 +72,14 @@ class PlayerEngineStatsService:
         weight = imc * (height_m**2)
 
         return round(weight, 1)
-    
+
     def get_height_and_weight(self, position: Position) -> Tuple[int, float]:
         player_height = self._choice_height(position)
-        player_weight = self._generate_weight(player_height,position)
+        player_weight = self._generate_weight(player_height, position)
 
         return int(player_height), float(player_weight)
-    
-    def calculate_potential(self, overall: int, age:int, position: str) -> int:
+
+    def calculate_potential(self, overall: int, age: int, position: str) -> int:
         pos = position.upper()
         factor_evolution = list(range(2, 6))
         peak_age = self.PEAK_AGE.get(pos, 27)

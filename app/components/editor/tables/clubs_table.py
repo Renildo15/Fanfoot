@@ -5,7 +5,7 @@ from app.services.club_service import list_clubs
 from app.services.country_service import get_country
 
 
-def clubs_table(clubs: Club, rebuild_club_info_callback: callable) :
+def clubs_table(clubs: Club, rebuild_club_info_callback: callable):
     rows = []
 
     for club in clubs:

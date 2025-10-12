@@ -3,17 +3,20 @@ import flet as ft
 
 from app.components.editor.clubs.club_info import club_info
 from app.components.editor.header import header
-from app.components.editor.sections.section_toolbar_clubs import section_toolbar_clubs
-from app.components.editor.sections.section_toolbar_leagues import section_toolbar_leagues
-from app.components.editor.sections.section_toolbar_players import section_toolbar_players
-from app.components.editor.sections.section_toolbar_stats import section_toolbar_stats
+from app.components.editor.sections.section_toolbar_clubs import \
+    section_toolbar_clubs
+from app.components.editor.sections.section_toolbar_leagues import \
+    section_toolbar_leagues
+from app.components.editor.sections.section_toolbar_players import \
+    section_toolbar_players
+from app.components.editor.sections.section_toolbar_stats import \
+    section_toolbar_stats
 from app.components.editor.tables.clubs_table import clubs_table
 from app.components.editor.tables.leagues_table import leagues_table
 from app.components.editor.tables.players_table import players_table
 from app.components.editor.tables.stats_table import stats_table
-from app.services.club_service import list_clubs
 from app.db.models import Club
-from app.services.club_service import get_club
+from app.services.club_service import get_club, list_clubs
 
 SECTIONS = [
     ("Ligas", ft.Icons.EVENT_AVAILABLE_OUTLINED),
@@ -22,15 +25,16 @@ SECTIONS = [
     ("Estatísticas", ft.Icons.BAR_CHART_OUTLINED),
 ]
 
+
 def view(page: ft.Page) -> ft.Control:
     current = {"name": "Ligas"}
     clubs, total = list_clubs()
     club: Club = None
-    
+
     # Referências para os componentes que precisam ser atualizados
     club_info_ref = ft.Ref[ft.Column]()
     right_column_ref = ft.Ref[ft.Column]()
-    
+
     # ---------- Conteúdo da área principal ----------
     content_container = ft.Container(expand=True)
 
@@ -49,7 +53,7 @@ def view(page: ft.Page) -> ft.Control:
         except Exception as ex:
             print(f"Erro ao obter clube: {ex}")
             club = None
-        
+
         # Atualiza o club_info na coluna direita
         if right_column_ref.current:
             right_column_ref.current.controls = [club_info(page, club)]
@@ -76,7 +80,7 @@ def view(page: ft.Page) -> ft.Control:
                 scroll=ft.ScrollMode.AUTO,
             )
             right_column_ref.current = right_col
-            
+
             return ft.Column(
                 [
                     section_toolbar_clubs(page, refresh_callback=refresh_clubs),
@@ -97,7 +101,7 @@ def view(page: ft.Page) -> ft.Control:
                         expand=True,
                         spacing=10,
                         alignment=ft.MainAxisAlignment.START,
-                        vertical_alignment=ft.CrossAxisAlignment.START
+                        vertical_alignment=ft.CrossAxisAlignment.START,
                     ),
                 ],
                 spacing=20,

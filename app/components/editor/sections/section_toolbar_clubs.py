@@ -80,5 +80,4 @@ def section_toolbar_clubs(page: ft.Page, refresh_callback=None):
         ],
         spacing=10,
         vertical_alignment=ft.CrossAxisAlignment.CENTER,
-        
     )

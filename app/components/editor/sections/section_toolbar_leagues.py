@@ -1,6 +1,7 @@
 import flet as ft
 
-from app.components.editor.modals.open_create_league_dialog import open_create_league_dialog
+from app.components.editor.modals.open_create_league_dialog import \
+    open_create_league_dialog
 from app.components.editor.modals.open_csv_modal import open_csv_modal
 from app.services.file_service import FileService
 
