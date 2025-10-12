@@ -42,6 +42,24 @@ class PlayerEngineStatsService:
         "DEFAULT": (21.5, 24.5),
     }
 
+    PEAK_AGE = {
+        "GK": 30,
+        "CB": 28,
+        "LB": 28,
+        "RB": 28,
+        "LWB": 28,
+        "RWB": 28,
+        "CDM": 27,
+        "CM": 27,
+        "CAM": 27,
+        "LM": 27,
+        "RM": 27,
+        "LW": 26,
+        "RW": 26,
+        "CF": 26,
+        "ST": 26,
+    }
+
     def _choice_height(self, position: Position) -> int:
         pos = position.upper()
         low, high = self.PROFILES.get(pos, self.PROFILES["DEFAULT"])
@@ -60,3 +78,19 @@ class PlayerEngineStatsService:
         player_weight = self._generate_weight(player_height,position)
 
         return int(player_height), float(player_weight)
+    
+    def calculate_potential(self, overall: int, age:int, position: str) -> int:
+        pos = position.upper()
+        factor_evolution = list(range(2, 6))
+        peak_age = self.PEAK_AGE.get(pos, 27)
+
+        years_to_peak = max(peak_age - age, 0)
+        max_margin = years_to_peak * random.choice(factor_evolution)
+
+        potential = overall + max_margin
+
+        potential += random.randint(0, 3)
+
+        potential = min(potential, 99)
+
+        return potential

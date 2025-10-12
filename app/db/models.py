@@ -149,7 +149,7 @@ class Player(SQLModel, table=True):
     secondary_position: Optional[Position] = Field(sa_column_kwargs={"nullable": True})
     preferred_foot: PlayerPreferredFoot = Field(sa_column_kwargs={"nullable": False})
     height_cm: int = 170 #gerar de forma aleatoria
-    weight_kg: int = 70 #gerar de forma aleatoria
+    weight_kg: float = 70.0 #gerar de forma aleatoria
     overall: int = 50 #gerar de forma aleatoria e manual
     potential: int = 50 #gerar de forma aleatoria somente para jovens
     morale: int = 40 #gerar de forma aleatoria

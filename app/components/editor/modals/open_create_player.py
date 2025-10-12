@@ -3,12 +3,13 @@ import flet.canvas as cv
 from app.db.models import Position, PlayerPreferredFoot
 from app.services.country_service import get_countries, get_country
 from app.components.editor.countries_options import countries_options
+from app.services.player_engine_stats_service import PlayerEngineStatsService
 from app.db.models import Club
 
 def open_create_player(page: ft.Page, club: Club):
 
     all_countries = get_countries()
-
+    player_engine = PlayerEngineStatsService()
     full_name = ft.TextField(label="Nome", autofocus=True, width=360)
     surname = ft.TextField(label="Apelido", width=360, max_length=11, value="Jogador")
     age = ft.TextField(
@@ -196,6 +197,11 @@ def open_create_player(page: ft.Page, club: Club):
             error_text.value = "Idade inválida."
             page.update()
             return
+
+        if int(shirt_number.value) <= 0 or not shirt_number.value:
+            error_text.value = "Adicione um número válido"
+            page.update()
+            return
         
         if int(overall.value) < 50 or int(overall.value) > 99:
             error_text.value = "Overall inválido."
@@ -204,6 +210,9 @@ def open_create_player(page: ft.Page, club: Club):
         
         if secondary_position.value in "Sem":
             secondary_position.value = None
+
+        height, weight = player_engine.get_height_and_weight(position.value)
+        potential = player_engine.calculate_potential(int(overall.value), int(age.value), position.value)
 
         try:
             country_obj = None
@@ -220,15 +229,15 @@ def open_create_player(page: ft.Page, club: Club):
                 "overall": int(overall.value),
                 "shirt_number": int(shirt_number.value),
                 "country": country_obj,
-                "height_cm": 000,
-                "weight_kg": 000,
+                "height_cm": height,
+                "weight_kg": weight,
                 "morale": 000,
-                "fitness": 000,
+                "fitness": 100,
                 "status": "status",
-                "potential": 00,
+                "potential": potential,
                 "salary_weekly": 0000,
                 "contract_until": 00000,
-                "current_club_id": 1
+                "current_club_id": club.id
             }
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
