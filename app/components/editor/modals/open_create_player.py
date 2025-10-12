@@ -4,7 +4,7 @@ from app.db.models import Position, PlayerPreferredFoot
 from app.services.country_service import get_countries, get_country
 from app.components.editor.countries_options import countries_options
 from app.services.player_engine_stats_service import PlayerEngineStatsService
-from app.db.models import Club
+from app.db.models import Club, PlayerStatus
 
 def open_create_player(page: ft.Page, club: Club):
 
@@ -233,7 +233,7 @@ def open_create_player(page: ft.Page, club: Club):
                 "weight_kg": weight,
                 "morale": 000,
                 "fitness": 100,
-                "status": "status",
+                "status": PlayerStatus.ACTIVE.value,
                 "potential": potential,
                 "salary_weekly": 0000,
                 "contract_until": 00000,
