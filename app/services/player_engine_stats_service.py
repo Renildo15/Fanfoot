@@ -60,6 +60,53 @@ class PlayerEngineStatsService:
         "ST": 26,
     }
 
+    SALARY_CONFIG = {
+        "min_weekly": 200,  # salário mínimo semanal (unidade genérica)
+        "max_weekly": 250_000,  # teto plausível semanal (ajuste se quiser)
+        "base_overall_min": 40,  # overall mínimo esperado
+        "base_overall_max": 99,  # overall máximo esperado
+        # multiplicador por posição
+        "position_multiplier": {
+            "GK": 1.05,
+            "CB": 1.00,
+            "LB": 0.95,
+            "RB": 0.95,
+            "LWB": 0.95,
+            "RWB": 0.95,
+            "CDM": 1.00,
+            "CM": 1.00,
+            "CAM": 1.05,
+            "RM": 0.98,
+            "LM": 0.98,
+            "RW": 1.05,
+            "LW": 1.05,
+            "CF": 1.10,
+            "ST": 1.10,
+            "DEFAULT": 1.0,
+        },
+        # bonus por nível de promessa: multiplica a diferença até o teto
+        "promise_multiplier": {
+            "low": 0.9,
+            "normal": 1.0,
+            "high": 1.15,
+            "star": 1.30,  # prodígio
+        },
+        # ajuste de idade (reduz leve salário para muito jovem; aumenta para experientes)
+        "age_modifier": lambda age: 0.9 if age <= 17 else (1.15 if age >= 30 else 1.0),
+    }
+
+    CONTRACT_CONFIG = {
+        # meses mínimos e máximos de contrato
+        "min_months": 1,
+        "max_months": 84,  # 7 anos
+        # regras: jovens recebem contratos mais longos, veteranos mais curtos
+        "years_for_youth_long": 4,  # base years for youth
+        "age_young_threshold": 22,
+        "age_old_threshold": 30,
+        # chance de contrato extra (assinatura premium) para estrelas
+        "star_extra_months": 24,
+    }
+
     def _choice_height(self, position: Position) -> int:
         pos = position.upper()
         low, high = self.PROFILES.get(pos, self.PROFILES["DEFAULT"])
@@ -94,3 +141,99 @@ class PlayerEngineStatsService:
         potential = min(potential, 99)
 
         return potential
+
+    def generate_overall(self, age: int) -> int:
+        min_overall = max(50, age * 2)
+        max_overall = min(age * 3 + 20, 99)
+
+        overall = random.randint(min_overall, max_overall)
+
+        return overall
+
+    def _generate_weekly_salary(
+        self,
+        overall: int,
+        age: int,
+        position: Position,
+        promise: str = "normal",
+        config: dict = SALARY_CONFIG,
+    ) -> float:
+        """
+        Retorna salário semanal (int) baseado em overall, idade, posição e categoria 'promise'.
+        'promise' deve ser uma das keys em SALARY_CONFIG["promise_multiplier"].
+        """
+        pos = position.upper()
+        pm = config["position_multiplier"].get(
+            pos, config["position_multiplier"]["DEFAULT"]
+        )
+        prom_mult = config["position_multiplier"].get(promise, 1.0)
+
+        low = config["base_overall_min"]
+        high = config["base_overall_max"]
+        norm = max(0.0, min(1.0, (overall - low) / (high - low)))
+
+        base_salary = config["min_weekly"] + norm * (
+            config["max_weekly"] - config["min_weekly"]
+        )
+
+        age_mod = config["age_modifier"](age)
+        salary = base_salary * pm * prom_mult * age_mod
+
+        variation = random.uniform(0.95, 1.05)
+        salary *= variation
+
+        salary = float(
+            max(config["min_weekly"], min(config["max_weekly"], round(salary)))
+        )
+
+        return salary
+
+    def _generate_contract_length(
+        self,
+        overall: int,
+        age: int,
+        promise: str = "normal",
+        config: dict = CONTRACT_CONFIG,
+    ) -> int:
+        """
+        Retorna duração do contrato em meses.
+        Estratégia simples:
+        - Jogadores jovens (< threshold) recebem contratos mais longos (3-5 anos)
+        - Idade normal (threshold..old) recebe contratos médios (1-4 anos)
+        - Jogadores velhos recebem contratos curtos (6-24 meses)
+        - Jogadores 'star' ou com very high overall podem ganhar contratos maiores e/ou extensão
+        """
+        # base em meses dependendo da idade
+        if age <= config["age_young_threshold"]:
+            base_years = config["years_for_youth_long"]
+            # para muito jovens, dar entre base_years e base_years+2 anos (em meses)
+            months = random.randint(base_years * 12, (base_years + 2) * 12)
+        elif age >= config["age_old_threshold"]:
+            # veteranos: 6 a 24 meses
+            months = random.randint(6, 24)
+        else:
+            # adultos em carreira: 12 a 60 meses (1 a 5 anos)
+            months = random.randint(12, 60)
+
+        # se promessa for 'high' ou 'star', aumenta chance de contrato longo
+        if promise == "high":
+            months = int(months * 1.15)
+        elif promise == "star":
+            months = int(months * 1.4) + config["star_extra_months"]
+
+        # se overall muito alto, extender levemente
+        if overall >= 85:
+            months = int(months * 1.25)
+        elif overall >= 75:
+            months = int(months * 1.08)
+
+        # clamp
+        months = max(config["min_months"], min(config["max_months"], months))
+        return months
+
+    def generate_salary_and_contract(
+        self, overall: int, age: int, position: Position = "DEFAULT", promise: str = "normal"
+    ) -> Tuple[float, int]:
+        weekly = self._generate_weekly_salary(overall, age, position, promise)
+        months = self._generate_contract_length(overall, age, promise)
+        return weekly, months

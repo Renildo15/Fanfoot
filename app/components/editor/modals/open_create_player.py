@@ -198,6 +198,9 @@ def open_create_player(page: ft.Page, club: Club):
             page.update()
             return
 
+        if not overall.value:
+            overall.value = player_engine.generate_overall(int(age.value))
+
         if int(overall.value) < 50 or int(overall.value) > 99:
             error_text.value = "Overall inválido."
             page.update()
@@ -210,6 +213,8 @@ def open_create_player(page: ft.Page, club: Club):
         potential = player_engine.calculate_potential(
             int(overall.value), int(age.value), position.value
         )
+
+        weekly, months = player_engine.generate_salary_and_contract(int(overall.value), int(age.value), position.value)
 
         try:
             country_obj = None
@@ -228,12 +233,11 @@ def open_create_player(page: ft.Page, club: Club):
                 "country": country_obj,
                 "height_cm": height,
                 "weight_kg": weight,
-                "morale": 000,
                 "fitness": 100,
                 "status": PlayerStatus.ACTIVE.value,
                 "potential": potential,
-                "salary_weekly": 0000,
-                "contract_until": 00000,
+                "salary_weekly": weekly,
+                "contract_until": months,
                 "current_club_id": club.id,
             }
         except Exception as ex:

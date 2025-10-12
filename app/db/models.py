@@ -152,14 +152,14 @@ class Player(SQLModel, table=True):
     weight_kg: float = 70.0  # gerar de forma aleatoria
     overall: int = 50  # gerar de forma aleatoria e manual
     potential: int = 50  # gerar de forma aleatoria somente para jovens
-    morale: int = 40  # gerar de forma aleatoria
+    # morale: int = 40  # gerar de forma aleatoria
     fitness: int = 100
     status: PlayerStatus = Field(
         default=PlayerStatus.ACTIVE, sa_column_kwargs={"nullable": False}
     )
     shirt_number: int = 0
     salary_weekly: float = 0.0  # gerar de forma aleatoria
-    contract_until: str = "2030-06-30"  # gerar de forma aleatoria
+    contract_until: int = 0  # gerar de forma aleatoria
 
     current_club_id: Optional[int] = Field(default=None, foreign_key="club.id")
     club: Optional[Club] = Relationship(back_populates="players")
