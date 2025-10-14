@@ -141,7 +141,7 @@ def open_create_player(page: ft.Page, club: Club):
                     size=14,
                     weight=ft.FontWeight.W_600,
                     color=ft.Colors.WHITE,
-                    font_family="Thailandesa",
+                    font_family="Kelly Slab",
                 ),
                 width=200,
                 height=40,
