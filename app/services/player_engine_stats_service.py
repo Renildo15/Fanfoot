@@ -232,7 +232,11 @@ class PlayerEngineStatsService:
         return months
 
     def generate_salary_and_contract(
-        self, overall: int, age: int, position: Position = "DEFAULT", promise: str = "normal"
+        self,
+        overall: int,
+        age: int,
+        position: Position = "DEFAULT",
+        promise: str = "normal",
     ) -> Tuple[float, int]:
         weekly = self._generate_weekly_salary(overall, age, position, promise)
         months = self._generate_contract_length(overall, age, promise)

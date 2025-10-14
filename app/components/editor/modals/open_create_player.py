@@ -4,8 +4,9 @@ import flet.canvas as cv
 from app.components.editor.countries_options import countries_options
 from app.db.models import Club, PlayerPreferredFoot, PlayerStatus, Position
 from app.services.country_service import get_countries, get_country
-from app.services.player_service import create_player
 from app.services.player_engine_stats_service import PlayerEngineStatsService
+from app.services.player_service import create_player
+from app.utils.get_position import get_position, get_position_from_ptbr
 
 
 def open_create_player(page: ft.Page, club: Club):
@@ -24,13 +25,13 @@ def open_create_player(page: ft.Page, club: Club):
     position = ft.Dropdown(
         label="Posição",
         width=170,
-        options=[ft.dropdown.Option(t.value) for t in Position],
+        options=[ft.dropdown.Option(get_position(t.value)) for t in Position],
         value=Position.GK.value,
     )
     secondary_position = ft.Dropdown(
-        label="Segunda posição",
+        label="Seg. posição",
         width=170,
-        options=[ft.dropdown.Option(t.value) for t in Position],
+        options=[ft.dropdown.Option(get_position(t.value)) for t in Position],
         value=None,
     )
 
@@ -174,7 +175,7 @@ def open_create_player(page: ft.Page, club: Club):
 
     def update_surname(e=None):
         if current_name.current:
-            current_name.current.value = surname.value
+            current_name.current.value = surname.value.upper()
             current_name.current.update()
 
     # Configurar o evento on_change
@@ -220,7 +221,9 @@ def open_create_player(page: ft.Page, club: Club):
             int(overall.value), int(age.value), position.value
         )
 
-        weekly, months = player_engine.generate_salary_and_contract(int(overall.value), int(age.value), position.value)
+        weekly, months = player_engine.generate_salary_and_contract(
+            int(overall.value), int(age.value), position.value
+        )
 
         try:
             country_obj = None
@@ -228,11 +231,11 @@ def open_create_player(page: ft.Page, club: Club):
                 country_obj = get_country(country.value)
 
             payload = {
-                "full_name": full_name.value,
-                "surname": surname.value,
+                "full_name": full_name.value.upper(),
+                "surname": surname.value.upper(),
                 "age": age.value,
-                "position": position.value,
-                "secondary_position": secondary_position.value,
+                "position": get_position_from_ptbr(position.value),
+                "secondary_position": get_position_from_ptbr(secondary_position.value),
                 "preferred_foot": preferred_foot.value,
                 "overall": int(overall.value),
                 "shirt_number": int(shirt_number.value),
@@ -246,7 +249,8 @@ def open_create_player(page: ft.Page, club: Club):
                 "contract_until": months,
                 "current_club_id": club.id,
             }
-            create_player(payload)
+            # create_player(payload)
+            print(payload)
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
             print(ex)
@@ -271,7 +275,19 @@ def open_create_player(page: ft.Page, club: Club):
                 [
                     ft.Column(
                         [
-                            ft.Row([full_name, surname, age], spacing=12),
+                            ft.Row([full_name, surname], spacing=12),
+                        ],
+                        width=360,
+                    ),
+                ],
+                spacing=20,
+                alignment=ft.MainAxisAlignment.START,
+            ),
+            ft.Row(
+                [
+                    ft.Column(
+                        [
+                            ft.Row([age], spacing=12),
                         ],
                         width=360,
                     ),
@@ -286,12 +302,11 @@ def open_create_player(page: ft.Page, club: Club):
                         [
                             ft.Row([country, shirt_number], spacing=12),
                         ],
-                        expand=True,
                     ),
                 ],
                 spacing=20,
             ),
-             ft.Row(
+            ft.Row(
                 [
                     ft.Column(
                         [
@@ -318,6 +333,7 @@ def open_create_player(page: ft.Page, club: Club):
                 spacing=20,
             ),
             ft.Divider(opacity=0.2),
+            error_text,
         ],
         spacing=16,
         width=820,

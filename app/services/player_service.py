@@ -1,15 +1,17 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from app.db.models import PlayerPreferredFoot, Position, PlayerStatus, Country, Player
-from app.db.db import get_session
-
-from sqlmodel import SQLModel, select
 from sqlalchemy.orm import selectinload
+from sqlmodel import SQLModel, select
+
+from app.db.db import get_session
+from app.db.models import (Country, Player, PlayerPreferredFoot, PlayerStatus,
+                           Position)
+
 
 class PlayerCreate(SQLModel):
     full_name: str
     surname: Optional[str]
-    age: int 
+    age: int
     position: Position
     secondary_position: Optional[Position]
     preferred_foot: PlayerPreferredFoot
@@ -26,7 +28,6 @@ class PlayerCreate(SQLModel):
     country: Optional[Country]
 
 
-
 def create_player(data: PlayerCreate) -> Player:
     with get_session() as s:
         player = Player(**data)
@@ -35,15 +36,17 @@ def create_player(data: PlayerCreate) -> Player:
         s.refresh(player)
 
         return player
-    
+
+
 def list_players() -> List[Player]:
     with get_session() as s:
         stmt = select(Player)
         results = s.exec(stmt)
         players = results.all()
         return players
-    
-def get_player(player_id:int):
+
+
+def get_player(player_id: int):
     with get_session() as s:
         stmt = (
             select(Player)
