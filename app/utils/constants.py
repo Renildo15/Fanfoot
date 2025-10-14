@@ -1,6 +1,6 @@
 APP_VERSION = "v1.0.0"
 USERNAME = "habby ☓"
-APP_NAME = "FANTASYFOOT"
+APP_NAME = "FANFOOT"
 
 ROUTES = {
     "home": "/",

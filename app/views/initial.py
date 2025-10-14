@@ -26,7 +26,7 @@ def view(page: ft.Page) -> ft.Control:
 
     # Watermark central
     title_watermark = ft.Text(
-        "Footfantasy",
+        "FANFOOT",
         size=92,
         weight=ft.FontWeight.W_900,
         color=ft.Colors.with_opacity(0.12, ft.Colors.WHITE),
@@ -148,14 +148,23 @@ def view(page: ft.Page) -> ft.Control:
     )
 
     # Fundo (coloque assets/bg.png se quiser imagem)
-    background = ft.Container(
+    background = ft.Stack(
+        controls=[
+            ft.Image(
+                src="assets/bg.png",
+                fit=ft.ImageFit.FILL,
+                expand=True,
+            ),
+            ft.Container(
+                expand=True,
+                bgcolor=ft.Colors.with_opacity(0.08, ft.Colors.CYAN_900),
+            ),
+        ],
         expand=True,
-        # image_src="assets/bg.png",
-        # image_fit=ft.ImageFit.COVER,
-        bgcolor=ft.Colors.with_opacity(0.08, ft.Colors.CYAN_900),
     )
 
     # SnackBar opcional
     page.snack_bar = ft.SnackBar(ft.Text("Ação de exemplo — vamos conectar depois."))
 
     return ft.Stack([background, glass_overlay], expand=True)
+
