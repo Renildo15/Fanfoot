@@ -17,6 +17,7 @@ from app.components.editor.tables.players_table import players_table
 from app.components.editor.tables.stats_table import stats_table
 from app.db.models import Club
 from app.services.club_service import get_club, list_clubs
+from app.services.player_service import list_players
 
 SECTIONS = [
     ("Ligas", ft.Icons.EVENT_AVAILABLE_OUTLINED),
@@ -30,7 +31,7 @@ def view(page: ft.Page) -> ft.Control:
     current = {"name": "Ligas"}
     clubs, total = list_clubs()
     club: Club = None
-
+    players = list_players()
     # Referências para os componentes que precisam ser atualizados
     club_info_ref = ft.Ref[ft.Column]()
     right_column_ref = ft.Ref[ft.Column]()
@@ -112,7 +113,7 @@ def view(page: ft.Page) -> ft.Control:
 
         if name == "Jogadores":
             return ft.Column(
-                [section_toolbar_players(), ft.Divider(opacity=0.2), players_table()],
+                [section_toolbar_players(), ft.Divider(opacity=0.2), players_table(players)],
                 spacing=12,
                 expand=True,
                 scroll=ft.ScrollMode.AUTO,
