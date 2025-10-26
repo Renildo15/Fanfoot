@@ -1,11 +1,14 @@
+import csv
 import flet as ft
 
 from app.components.editor.modals.open_create_player import open_create_player
 from app.db.models import Club
 from app.services.country_service import get_country
+from app.components.editor.modals.open_csv_modal import open_csv_modal
+from app.utils.get_position import get_position_abbr_ptbr
 
 
-def club_info(page: ft.Page, club: Club):
+def club_info(page: ft.Page, club: Club, refresh_callback=None):
     if club is None:
         return ft.Column(
             [
@@ -20,7 +23,54 @@ def club_info(page: ft.Page, club: Club):
                 )
             ]
         )
+    picker_file = ft.FilePicker()
+    page.overlay.append(picker_file)
+
+    def import_file(e):
+        picker_file.pick_files(
+            allow_multiple=False,
+            allowed_extensions=["csv"],
+            dialog_title="Selecionar arquivo de dados",
+            file_type=ft.FilePickerFileType.CUSTOM,
+            initial_directory="/home/habby-valle/Documentos/projects/games/fantasyfoot/data",
+        )
+    def on_file_picker(e: ft.FilePickerResultEvent):
+        if not e.files:
+            return
+
+        file = e.files[0]
+        print(f"Arquivo selecionado para importação: {file}")
+
+        try:
+            if file.name.endswith(".csv"):
+                page.open(
+                    ft.SnackBar(ft.Text("Arquivo CSV selecionado. Processando..."))
+                )
+                if hasattr(file, "path") and file.path:
+                    with open(file.path, "r", encoding="utf-8") as f:
+                        csv_reader = csv.DictReader(f)
+                        csv_data = list(csv_reader)
+                        page.open(
+                            open_csv_modal(
+                                page, players=csv_data, on_save_callback=refresh_callback
+                            )
+                        )
+                        page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
+                else:
+                     page.open (ft.SnackBar(
+                        ft.Text("Modo web: upload não implementado")
+                    ))
+            else:
+                page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
+        except Exception as ex:
+            page.open(ft.SnackBar(ft.Text(f"Erro na importação: {ex}")))
+
+        page.update()
+
+    picker_file.on_result = on_file_picker
     table = None
+    rows = []
+    
     if len(club.players) == 0:
         table = ft.Column(
             [
@@ -36,28 +86,45 @@ def club_info(page: ft.Page, club: Club):
             ]
         )
     else:
-        table = ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text("Jogador")),
-                ft.DataColumn(ft.Text("Posicao")),
-                ft.DataColumn(ft.Text("Pais")),
-            ],
-            rows=[
+
+        for player in club.players:
+            country_flag = ft.Icon(ft.Icons.FLAG, size=24, color=ft.Colors.GREY_400)
+            if player.country_id:
+                try:
+                    country = get_country(player.country_id)
+                    if country and country.flag:
+                        country_flag = ft.Image(
+                            src=country.flag,
+                            width=24,
+                            height=16,
+                            fit=ft.ImageFit.CONTAIN,
+                        )
+                except Exception as ex:
+                    print(f"Erro ao obter bandeira do país {player.country_id}: {ex}")
+            rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text("Nome do Jogador")),
-                        ft.DataCell(ft.Text("Posicao")),
-                        ft.DataCell(ft.Text("Pais")),
+                        ft.DataCell(ft.Text(get_position_abbr_ptbr(player.position.value))),
+                        ft.DataCell(ft.Text(player.full_name)),
+                        ft.DataCell(country_flag),
                     ]
-                ),
+                )
+            )
+
+        table = ft.DataTable(
+            columns=[
+                ft.DataColumn(ft.Text("Posição")),
+                ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("Pais")),
             ],
+            rows=rows,
             border=ft.border.all(1, ft.Colors.GREY_300),
             border_radius=8,
             vertical_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
             horizontal_lines=ft.border.BorderSide(1, ft.Colors.GREY_300),
         )
 
-    country = get_country(club.country_id)
+    country = get_country(club.country_id if club.country_id else 0)
     flag = ft.Image(
         src=country.flag if country.flag else "/assets/placeholder_club.png",
         width=192,
@@ -196,7 +263,7 @@ def club_info(page: ft.Page, club: Club):
                     ft.FilledButton(
                         "Importar csv",
                         icon=ft.Icons.FILE_UPLOAD,
-                        on_click=lambda e: print(""),
+                        on_click=import_file,
                     ),
                     ft.FilledButton(
                         "Editar",
