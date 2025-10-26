@@ -17,7 +17,7 @@ def csv_preview_competitions_table(competitions_data: List[Competition]):
 
         if country_id:
             try:
-                country = get_country(str(country_id).upper())
+                country = get_country(country_id)
                 if country and country.flag:
                     country_flag = ft.Image(
                         src=country.flag,
