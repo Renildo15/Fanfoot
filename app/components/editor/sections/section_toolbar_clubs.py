@@ -42,13 +42,13 @@ def section_toolbar_clubs(page: ft.Page, refresh_callback=None):
                         )
                         page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
                 else:
-                    page.snack_bar = ft.SnackBar(
+                    page.open(ft.SnackBar(
                         ft.Text("Modo web: upload não implementado")
-                    )
+                    ))
             else:
                 page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
         except Exception as ex:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Erro na importação: {ex}"))
+            page.open(ft.SnackBar(ft.Text(f"Erro na importação: {ex}")))
 
         page.update()
 
