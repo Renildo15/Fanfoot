@@ -52,7 +52,7 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
                         csv_data = list(csv_reader)
                         page.open(
                             open_csv_modal(
-                                page, players=csv_data, on_save_callback=refresh_callback
+                                page, players=csv_data, club_id=club.id, on_save_callback=refresh_callback
                             )
                         )
                         page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))

@@ -14,18 +14,22 @@ from app.utils.data_imports import ImportData
 def open_csv_modal(
     page: ft.Page,
     clubs: List[Club] = [],
+    club_id: int | None = None,
     competitions: List[Competition] =[],
     players: List[Player] = [],
     on_save_callback=None,
 ):
     def import_competitions(e):
         ImportData.data_import_competitions(competitions, page, on_save_callback)
+        page.close(modal)
 
     def import_clubs(e):
         ImportData.data_import_clubs(clubs, page, on_save_callback)
+        page.close(modal)
 
     def import_players(e):
-        ImportData.data_import_players(players, page, on_save_callback)
+        ImportData.data_import_players(players, page, club_id)
+        page.close(modal)
 
     c_club = club_content(clubs) if clubs else ft.Text("Nenhum clube para importar.")
     c_competition = (
@@ -76,5 +80,6 @@ def open_csv_modal(
         ],
         actions_alignment=ft.MainAxisAlignment.END,
     )
+    
 
     return modal
