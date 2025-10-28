@@ -15,7 +15,7 @@ def open_csv_modal(
     page: ft.Page,
     clubs: List[Club] = [],
     club_id: int | None = None,
-    competitions: List[Competition] =[],
+    competitions: List[Competition] = [],
     players: List[Player] = [],
     on_save_callback=None,
 ):
@@ -38,7 +38,11 @@ def open_csv_modal(
         else ft.Text("Nenhuma competição para importar.")
     )
 
-    p_player = players_table(players, is_from_csv=True) if players else ft.Text("Nenhum jogador para importar.")
+    p_player = (
+        players_table(players, is_from_csv=True)
+        if players
+        else ft.Text("Nenhum jogador para importar.")
+    )
 
     content = None
 
@@ -51,7 +55,6 @@ def open_csv_modal(
     else:
         content = ft.Text("Nada para importar.")
 
-
     btn_actions = []
     title = "Importar dados CSV"
     if clubs:
@@ -61,9 +64,7 @@ def open_csv_modal(
             ft.TextButton("Importar competições", on_click=import_competitions)
         )
     if players:
-        btn_actions.append(
-            ft.TextButton("Importar jogadores", on_click=import_players)
-        )
+        btn_actions.append(ft.TextButton("Importar jogadores", on_click=import_players))
 
     btn_actions.append(ft.TextButton("Cancelar", on_click=lambda e: page.close(modal)))
 
@@ -80,6 +81,5 @@ def open_csv_modal(
         ],
         actions_alignment=ft.MainAxisAlignment.END,
     )
-    
 
     return modal

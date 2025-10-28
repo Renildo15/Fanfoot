@@ -72,16 +72,17 @@ def get_position_from_ptbr(position_pt: str) -> Position | None:
         case _:
             return None
 
+
 def get_position_abbr_ptbr(position: Position) -> str:
     match position:
         case Position.GK:
-            return "GL"   # Goleiro
+            return "GL"  # Goleiro
         case Position.RB:
-            return "LD"   # Lateral Direito
+            return "LD"  # Lateral Direito
         case Position.LB:
-            return "LE"   # Lateral Esquerdo
+            return "LE"  # Lateral Esquerdo
         case Position.CB:
-            return "ZC"   # Zagueiro Central
+            return "ZC"  # Zagueiro Central
         case Position.RWB:
             return "LDO"  # Lateral Direito Ofensivo
         case Position.LWB:
@@ -89,19 +90,19 @@ def get_position_abbr_ptbr(position: Position) -> str:
         case Position.CDM:
             return "VOL"  # Volante
         case Position.CM:
-            return "MC"   # Meio-Campo Central
+            return "MC"  # Meio-Campo Central
         case Position.CAM:
-            return "MO"   # Meia Ofensivo
+            return "MO"  # Meia Ofensivo
         case Position.RM:
-            return "MD"   # Meio-Campo Direito
+            return "MD"  # Meio-Campo Direito
         case Position.LM:
-            return "ME"   # Meio-Campo Esquerdo
+            return "ME"  # Meio-Campo Esquerdo
         case Position.RW:
-            return "PD"   # Ponta Direita
+            return "PD"  # Ponta Direita
         case Position.LW:
-            return "PE"   # Ponta Esquerda
+            return "PE"  # Ponta Esquerda
         case Position.CF:
-            return "CA"   # Centroavante
+            return "CA"  # Centroavante
         case Position.ST:
             return "ATA"  # Atacante
         case _:

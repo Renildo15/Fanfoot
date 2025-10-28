@@ -1,10 +1,11 @@
 import csv
+
 import flet as ft
 
 from app.components.editor.modals.open_create_player import open_create_player
+from app.components.editor.modals.open_csv_modal import open_csv_modal
 from app.db.models import Club
 from app.services.country_service import get_country
-from app.components.editor.modals.open_csv_modal import open_csv_modal
 from app.utils.get_position import get_position_abbr_ptbr
 
 
@@ -34,6 +35,7 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
             file_type=ft.FilePickerFileType.CUSTOM,
             initial_directory="/home/habby-valle/Documentos/projects/games/fantasyfoot/data",
         )
+
     def on_file_picker(e: ft.FilePickerResultEvent):
         if not e.files:
             return
@@ -52,14 +54,15 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
                         csv_data = list(csv_reader)
                         page.open(
                             open_csv_modal(
-                                page, players=csv_data, club_id=club.id, on_save_callback=refresh_callback
+                                page,
+                                players=csv_data,
+                                club_id=club.id,
+                                on_save_callback=refresh_callback,
                             )
                         )
                         page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
                 else:
-                     page.open (ft.SnackBar(
-                        ft.Text("Modo web: upload não implementado")
-                    ))
+                    page.open(ft.SnackBar(ft.Text("Modo web: upload não implementado")))
             else:
                 page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
         except Exception as ex:
@@ -70,7 +73,7 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
     picker_file.on_result = on_file_picker
     table = None
     rows = []
-    
+
     if len(club.players) == 0:
         table = ft.Column(
             [
@@ -104,7 +107,9 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
             rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(get_position_abbr_ptbr(player.position.value))),
+                        ft.DataCell(
+                            ft.Text(get_position_abbr_ptbr(player.position.value))
+                        ),
                         ft.DataCell(ft.Text(player.full_name)),
                         ft.DataCell(country_flag),
                     ]

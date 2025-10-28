@@ -113,7 +113,11 @@ def view(page: ft.Page) -> ft.Control:
 
         if name == "Jogadores":
             return ft.Column(
-                [section_toolbar_players(), ft.Divider(opacity=0.2), players_table(players)],
+                [
+                    section_toolbar_players(),
+                    ft.Divider(opacity=0.2),
+                    players_table(players),
+                ],
                 spacing=12,
                 expand=True,
                 scroll=ft.ScrollMode.AUTO,

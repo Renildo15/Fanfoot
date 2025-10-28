@@ -167,4 +167,3 @@ def view(page: ft.Page) -> ft.Control:
     page.snack_bar = ft.SnackBar(ft.Text("Ação de exemplo — vamos conectar depois."))
 
     return ft.Stack([background, glass_overlay], expand=True)
-

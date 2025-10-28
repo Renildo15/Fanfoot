@@ -1,9 +1,12 @@
+from typing import List
+
 import flet as ft
+
 from app.db.models import Player
 from app.services.club_service import get_club
-from typing import List
-from app.utils.get_position import get_position
 from app.services.player_engine_stats_service import PlayerEngineStatsService
+from app.utils.get_position import get_position
+
 
 def _to_int_safe(value, default=0):
     try:
@@ -12,11 +15,11 @@ def _to_int_safe(value, default=0):
         return default
 
 
-def players_table(players: List[Player], is_from_csv:bool=False):
+def players_table(players: List[Player], is_from_csv: bool = False):
     rows = []
     player_engine = PlayerEngineStatsService()
     club_cache: dict[int, str] = {}
-    
+
     for player in players:
         full_name = ""
         club_name = "Livre"
@@ -48,7 +51,7 @@ def players_table(players: List[Player], is_from_csv:bool=False):
             position = player.get("position") or "Desconhecido"
             overall = _to_int_safe(player.get("overall"), 0)
             potential = _to_int_safe(player.get("potential"), 0)
-            
+
             if potential == 0:
                 potential = player_engine.calculate_potential(overall, age, position)
 
@@ -75,7 +78,6 @@ def players_table(players: List[Player], is_from_csv:bool=False):
             else:
                 club_name = "Livre"
             position_display = get_position(position)
-
 
         rows.append(
             ft.DataRow(

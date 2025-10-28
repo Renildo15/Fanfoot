@@ -42,9 +42,7 @@ def section_toolbar_clubs(page: ft.Page, refresh_callback=None):
                         )
                         page.open(ft.SnackBar(ft.Text("Dados CSV carregados!")))
                 else:
-                    page.open(ft.SnackBar(
-                        ft.Text("Modo web: upload não implementado")
-                    ))
+                    page.open(ft.SnackBar(ft.Text("Modo web: upload não implementado")))
             else:
                 page.open(ft.SnackBar(ft.SnackBar(ft.Text("Formato não suportado"))))
         except Exception as ex:
