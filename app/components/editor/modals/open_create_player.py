@@ -249,13 +249,13 @@ def open_create_player(page: ft.Page, club: Club):
                 "contract_until": months,
                 "current_club_id": club.id,
             }
-            # create_player(payload)
-            print(payload)
+            create_player(payload)
         except Exception as ex:
             error_text.value = f"Valores inválidos: {ex}"
             print(ex)
             page.update()
             return
+        page.close(modal)
 
     form = ft.Column(
         [
