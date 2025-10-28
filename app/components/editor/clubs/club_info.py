@@ -7,6 +7,7 @@ from app.components.editor.modals.open_csv_modal import open_csv_modal
 from app.db.models import Club
 from app.services.country_service import get_country
 from app.utils.get_position import get_position_abbr_ptbr
+from app.components.editor.modals.open_modal_delete import open_modal_delete
 
 
 def club_info(page: ft.Page, club: Club, refresh_callback=None):
@@ -26,6 +27,18 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
         )
     picker_file = ft.FilePicker()
     page.overlay.append(picker_file)
+    has_players = len(club.players) > 0
+    btn_edit_ref = ft.Ref[ft.FilledButton]()
+    btn_remove_ref = ft.Ref[ft.FilledButton]()
+    selected_player_ref = ft.Ref[int]()
+
+    def select_player(player_id: int):
+        selected_player_ref.current = player_id
+
+        btn_edit_ref.current.disabled = False
+        btn_remove_ref.current.disabled = False
+
+        page.update()
 
     def import_file(e):
         picker_file.pick_files(
@@ -104,13 +117,17 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
                         )
                 except Exception as ex:
                     print(f"Erro ao obter bandeira do país {player.country_id}: {ex}")
+            btn_player = ft.TextButton(
+                content=ft.Text(player.surname),
+                on_click=lambda e, player_id=player.id: select_player(player_id),
+            )
             rows.append(
                 ft.DataRow(
                     cells=[
                         ft.DataCell(
                             ft.Text(get_position_abbr_ptbr(player.position.value))
                         ),
-                        ft.DataCell(ft.Text(player.full_name)),
+                        ft.DataCell(btn_player),
                         ft.DataCell(country_flag),
                     ]
                 )
@@ -269,20 +286,27 @@ def club_info(page: ft.Page, club: Club, refresh_callback=None):
                         "Importar csv",
                         icon=ft.Icons.FILE_UPLOAD,
                         on_click=import_file,
+                        disabled=has_players
                     ),
                     ft.FilledButton(
                         "Editar",
+                        ref=btn_edit_ref,
                         icon=ft.Icons.EDIT,
                         on_click=lambda e: print(""),
+                        disabled=True
                     ),
                     ft.FilledButton(
-                        "Remover", icon=ft.Icons.DELETE, on_click=lambda e: print("")
+                        "Remover",
+                        ref=btn_remove_ref,
+                        icon=ft.Icons.DELETE, 
+                        on_click=lambda e: page.open(open_modal_delete(page,selected_player_ref.current, refresh_callback)),
+                        disabled=True
                     ),
-                    ft.FilledButton(
-                        "Transferencia",
-                        icon=ft.Icons.CHANGE_CIRCLE,
-                        on_click=lambda e: print(""),
-                    ),
+                    # ft.FilledButton(
+                    #     "Transferencia",
+                    #     icon=ft.Icons.CHANGE_CIRCLE,
+                    #     on_click=lambda e: print(""),
+                    # ),
                 ]
             ),
         ],

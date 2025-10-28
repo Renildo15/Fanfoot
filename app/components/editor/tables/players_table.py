@@ -79,10 +79,14 @@ def players_table(players: List[Player], is_from_csv: bool = False):
                 club_name = "Livre"
             position_display = get_position(position)
 
+            btn_player = ft.TextButton(
+                content=ft.Text(full_name),
+                on_click=lambda e, player_id=player.id: print(player_id),
+            )
         rows.append(
             ft.DataRow(
                 cells=[
-                    ft.DataCell(ft.Text(full_name)),
+                    ft.DataCell(ft.Text(full_name) if is_from_csv else btn_player),
                     ft.DataCell(ft.Text(str(age))),
                     ft.DataCell(ft.Text(position_display)),
                     ft.DataCell(ft.Text(str(overall))),
