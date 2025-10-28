@@ -57,3 +57,12 @@ def get_player(player_id: int):
 
         result = s.exec(stmt).first()
         return result
+    
+def delete_player(player_id:int):
+    with get_session() as s:
+        stmt = select(Player).where(Player.id == player_id)
+        results = s.exec(stmt)
+        player = results.one()
+
+        s.delete(player)
+        s.commit()
