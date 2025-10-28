@@ -3,15 +3,17 @@ from typing import List
 
 import flet as ft
 
-from app.db.models import Club, Competition
+from app.db.models import Club, Competition, Player
 from app.services.club_service import create_club
 from app.services.country_service import get_country
 from app.services.league_service import create_league
-
+from app.services.player_service import create_player
+from app.services.player_engine_stats_service import PlayerEngineStatsService
+from app.db.models import PlayerStatus
 
 class ImportData:
     pattern = re.compile(r"^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$")
-
+    player_engine = PlayerEngineStatsService()
     @classmethod
     def data_import_competitions(
         cls, competitions: List[Competition], page: ft.Page, on_save_callback=None
@@ -134,6 +136,77 @@ class ImportData:
                 page.open(
                     ft.SnackBar(ft.Text(f"{len(clubs)} clubes importados com sucesso!"))
                 )
+            except Exception as ex:
+                page.open(ft.SnackBar(ft.Text(f"Valores inválidos: {ex}")))
+                print(ex)
+                page.update()
+                return
+
+    @classmethod
+    def data_import_players(cls, players: List[Player], page: ft.Page, club_id: int):
+        for player in players:
+            if not player.get("full_name"):
+                page.open(ft.SnackBar(ft.Text(f"Preencha o Nome completo.")))
+                page.update()
+                return
+
+            if int(player.get("age")) < 16 or int(player.get("age")) > 40:
+                page.open(ft.SnackBar(ft.Text(f"Idade inválida.")))
+                page.update()
+                return
+            
+            if int(player.get("shirt_number")) <= 0 or not player.get("shirt_number"):
+                page.open(ft.SnackBar(ft.Text(f"Número de camisa inválido.")))
+                page.update()
+                return
+            overall = player.get("overall")
+            if overall is not None:
+                overall = int(overall)
+                if overall == 0:
+                    overall = cls.player_engine.generate_overall(int(player.get("age")))
+            else:
+                overall = cls.player_engine.generate_overall(int(player.get("age")))
+
+            if overall < 50 or overall > 99:
+                page.open(ft.SnackBar(ft.Text(f"Overall inválido.")))
+                page.update()
+                return
+
+            
+            height, weight = cls.player_engine.get_height_and_weight(player.get("position"))
+            potential = cls.player_engine.calculate_potential(
+                overall, int(player.get("age")), player.get("position")
+            )
+
+            weekly, months = cls.player_engine.generate_salary_and_contract(
+                overall, int(player.get("age")), position=player.get("position")
+            )
+
+            try:
+                country_obj = None
+                if player.get("country_id"):
+                    country_obj = get_country(int(player.get("country_id")))
+
+                payload = {
+                    "full_name": player.get("full_name").upper(),
+                    "surname": player.get("surname").upper() if player.get("surname") else None,
+                    "age": int(player.get("age")),
+                    "position": player.get("position"),
+                    "secondary_position": player.get("secondary_position") if player.get("secondary_position") else None,
+                    "preferred_foot": player.get("preferred_foot"),
+                    "overall": overall,
+                    "shirt_number": int(player.get("shirt_number")),
+                    "country": country_obj,
+                    "height_cm": height,
+                    "weight_kg": weight,
+                    "fitness": 100,
+                    "status": PlayerStatus.ACTIVE.value,
+                    "potential": potential,
+                    "salary_weekly": weekly,
+                    "contract_until": months,
+                    "current_club_id": club_id,
+                }
+                create_player(payload)
             except Exception as ex:
                 page.open(ft.SnackBar(ft.Text(f"Valores inválidos: {ex}")))
                 print(ex)
